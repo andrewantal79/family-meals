@@ -487,7 +487,7 @@
 
 <script>
   // ─── CONFIGURATION ───────────────────────────────────────────────
-  const API_KEY = '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'; // Replace with your Anthropic API key
+  const PROXY_URL = 'https://family-meals-proxy.andrew-antal79.workers.dev';
 
   // Google Sheets CSV export URLs (works when sheet is "Anyone with link can view")
   const SHEET_ID = '1R432cBA83sJZ1yQgRpDjlHN-eJ40XUGiEYgYQN_UVfk';
@@ -597,7 +597,7 @@ Never add staples to the grocery list unless the user says they're out. Always b
       // Build system prompt with live pantry data
       const systemPrompt = await buildSystemPrompt();
 
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      const response = await fetch(PROXY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
