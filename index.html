@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antal Family Meals</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F3EE;
+    --warm-white: #FDFAF7;
+    --ink: #1C1917;
+    --muted: #78716C;
+    --accent: #C2410C;
+    --accent-light: #FED7AA;
+    --green: #3D6B4F;
+    --green-light: #D1FAE5;
+    --border: #E5DDD5;
+    --card: #FFFFFF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* Header */
+  header {
+    background: var(--ink);
+    padding: 28px 24px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(194, 65, 12, 0.15);
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -20px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(61, 107, 79, 0.12);
+  }
+
+  .header-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--warm-white);
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: var(--accent-light);
+  }
+
+  .header-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 6px;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.5px;
+  }
+
+  /* Main content */
+  main {
+    padding: 24px 20px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* Action buttons */
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .action-btn {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .action-btn:active {
+    transform: scale(0.97);
+  }
+
+  .action-btn:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 20px rgba(194, 65, 12, 0.1);
+  }
+
+  .action-btn.wide {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+  }
+
+  .btn-icon {
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .btn-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .btn-desc {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .action-btn.primary {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .action-btn.primary .btn-label {
+    color: var(--warm-white);
+  }
+
+  .action-btn.primary .btn-desc {
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* Custom input area */
+  .custom-input-section {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+
+  .custom-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .custom-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  textarea {
+    flex: 1;
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--ink);
+    resize: none;
+    height: 52px;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.5;
+  }
+
+  textarea:focus {
+    border-color: var(--accent);
+  }
+
+  textarea::placeholder {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .send-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    width: 44px;
+    height: 52px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .send-btn:hover { background: #9a3412; }
+  .send-btn:active { transform: scale(0.95); }
+
+  /* Response area */
+  .response-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    display: none;
+    animation: slideUp 0.3s ease;
+  }
+
+  .response-card.visible { display: block; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .response-header {
+    background: var(--ink);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .response-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    color: var(--warm-white);
+    font-style: italic;
+  }
+
+  .response-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .resp-action-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 6px;
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .resp-action-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+
+  .response-body {
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--ink);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .response-body h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 16px 0 8px;
+    color: var(--ink);
+  }
+
+  .response-body h3:first-child { margin-top: 0; }
+
+  .response-body p { margin-bottom: 10px; }
+
+  .response-body ul, .response-body ol {
+    padding-left: 18px;
+    margin-bottom: 10px;
+  }
+
+  .response-body li { margin-bottom: 4px; }
+
+  .response-body strong { font-weight: 500; color: var(--accent); }
+
+  .response-body table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 12px 0;
+  }
+
+  .response-body th {
+    background: var(--cream);
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .response-body td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .response-body tr:last-child td { border-bottom: none; }
+
+  /* Loading state */
+  .loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    color: var(--muted);
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  .loading-dots {
+    display: flex;
+    gap: 4px;
+  }
+
+  .loading-dots span {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  /* Error state */
+  .error-msg {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #991B1B;
+    margin: 12px 16px;
+  }
+
+  /* Pantry peek */
+  .pantry-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green-light);
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">Antal Household</div>
+  <h1>Family <em>Meals</em></h1>
+  <div class="header-sub">Pescatarian · Oak Park, IL</div>
+</header>
+
+<main>
+
+  <div class="pantry-badge">
+    <span>🥦</span> Pantry-first planning
+  </div>
+
+  <div class="actions">
+    <button class="action-btn primary" onclick="sendRequest('plan')">
+      <span class="btn-icon">🗓</span>
+      <div>
+        <div class="btn-label">Plan This Week</div>
+        <div class="btn-desc">3 cook nights + 2 leftover nights</div>
+      </div>
+    </button>
+
+    <button class="action-btn" onclick="sendRequest('grocery')">
+      <span class="btn-icon">🛒</span>
+      <div>
+        <div class="btn-label">Grocery List</div>
+        <div class="btn-desc">Based on current meal plan</div>
+      </div>
+    </button>
+
+    <button class="action-btn" onclick="sendRequest('pantry')">
+      <span class="btn-icon">🧺</span>
+      <div>
+        <div class="btn-label">Check Pantry</div>
+        <div class="btn-desc">What's on hand & use-soon items</div>
+      </div>
+    </button>
+
+    <button class="action-btn" onclick="sendRequest('surprise')">
+      <span class="btn-icon">✨</span>
+      <div>
+        <div class="btn-label">Surprise Me</div>
+        <div class="btn-desc">Something new from the pantry</div>
+      </div>
+    </button>
+  </div>
+
+  <div class="custom-input-section">
+    <span class="custom-label">Ask anything</span>
+    <div class="custom-input-row">
+      <textarea id="customInput" placeholder="e.g. Recipe for the miso salmon…" rows="2"></textarea>
+      <button class="send-btn" onclick="sendCustom()">↑</button>
+    </div>
+  </div>
+
+  <div class="response-card" id="responseCard">
+    <div class="response-header">
+      <span class="response-title" id="responseTitle">Response</span>
+      <div class="response-actions">
+        <button class="resp-action-btn" onclick="copyResponse()">Copy</button>
+        <button class="resp-action-btn" onclick="clearResponse()">Clear</button>
+      </div>
+    </div>
+    <div class="response-body" id="responseBody"></div>
+  </div>
+
+</main>
+
+<footer>Antal Family Meals · Powered by Claude</footer>
+
+<script>
+  // ─── CONFIGURATION ───────────────────────────────────────────────
+  const API_KEY = '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'; // Replace with your Anthropic API key
+
+  // Google Sheets CSV export URLs (works when sheet is "Anyone with link can view")
+  const SHEET_ID = '1R432cBA83sJZ1yQgRpDjlHN-eJ40XUGiEYgYQN_UVfk';
+  const PANTRY_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=Sheet1`;
+  const STAPLES_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=Staples`;
+
+  const BASE_SYSTEM_PROMPT = `You are a meal planning assistant for the Antal household in Oak Park, IL (ZIP 60302).
+
+HOUSEHOLD PROFILE:
+- 2 adults, pescatarian (fish & shellfish fine, no meat). Vegetarian meals are equally valid — not every night needs fish.
+- Cuisines: Mediterranean, Asian, Mexican
+- Budget: under $150/week groceries
+- Prep time: 30 min or less
+- Structure: 3 cook nights + 2 leftover nights (leftovers repurposed creatively, not repeated)
+- Planning priority: pantry-first. Use what's on hand before deciding what to buy.
+
+BEHAVIOR:
+- Never ask for preferences — they're defined above
+- For meal plans: present as a table, then ask approval before generating grocery list
+- For grocery lists: cross-reference pantry + staples, show item + estimated cost, show total
+- For recipes: scale for 2, include steps and a leftover repurposing note
+- If a recipe needs something unusual (e.g. caraway seeds), ask if they have it and if it should be added to staples
+- Keep responses clear and practical — tables for plans, clean lists for groceries, step-by-step for recipes
+- Use Oak Park IL prices for estimates`;
+
+  // ─── FETCH PANTRY DATA ───────────────────────────────────────────
+  async function fetchCSV(url) {
+    try {
+      const res = await fetch(url, { redirect: 'follow' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      if (!text || text.trim().length === 0) throw new Error('Empty response');
+      return text;
+    } catch (err) {
+      console.warn(`CSV fetch failed for ${url}:`, err.message);
+      return null;
+    }
+  }
+
+  function parseCSV(csv) {
+    if (!csv) return null;
+    return csv.split('\n')
+      .map(row => row.split(',').map(cell => cell.replace(/^"|"$/g, '').trim()))
+      .filter(row => row.some(cell => cell.length > 0));
+  }
+
+  function csvToReadable(rows, tabName) {
+    if (!rows || rows.length < 2) return `${tabName}: (empty)`;
+    const headers = rows[0];
+    const items = rows.slice(1).map(row =>
+      headers.map((h, i) => `${h}: ${row[i] || ''}`).join(', ')
+    );
+    return `${tabName}:\n${items.join('\n')}`;
+  }
+
+  async function buildSystemPrompt() {
+    // Fetch both tabs in parallel
+    const [pantryCSV, staplesCSV] = await Promise.all([
+      fetchCSV(PANTRY_CSV_URL),
+      fetchCSV(STAPLES_CSV_URL)
+    ]);
+
+    const pantryRows = parseCSV(pantryCSV);
+    const staplesRows = parseCSV(staplesCSV);
+
+    const pantryText = pantryRows 
+      ? csvToReadable(pantryRows, 'ACTIVE PANTRY (Sheet1)')
+      : 'ACTIVE PANTRY: ⚠️ Could not load — CORS or permissions issue';
+    
+    const staplesText = staplesRows
+      ? csvToReadable(staplesRows, 'STAPLES (always assumed on hand)')
+      : 'STAPLES: ⚠️ Could not load — CORS or permissions issue';
+
+    return `${BASE_SYSTEM_PROMPT}
+
+--- LIVE PANTRY DATA (fetched now) ---
+${pantryText}
+
+${staplesText}
+--- END PANTRY DATA ---
+
+Never add staples to the grocery list unless the user says they're out. Always build meals around active pantry items first.`;
+  }
+
+  // ─── PRESET PROMPTS ──────────────────────────────────────────────
+  const PRESETS = {
+    plan: "Plan this week's meals.",
+    grocery: "Generate a grocery list based on a meal plan for this week. Cross-reference the pantry first.",
+    pantry: "What's currently in the pantry? Flag anything that should be used soon based on when it was added.",
+    surprise: "Suggest one creative meal I can make mostly from what's already on hand."
+  };
+
+  // ─── CORE FUNCTION ───────────────────────────────────────────────
+  async function sendRequest(type, customMessage = null) {
+    const message = customMessage || PRESETS[type];
+    const titles = {
+      plan: '🗓 This Week\'s Meal Plan',
+      grocery: '🛒 Grocery List',
+      pantry: '🧺 Pantry Check',
+      surprise: '✨ Meal Idea',
+      custom: '💬 Response'
+    };
+
+    showLoading(titles[type] || titles.custom);
+
+    try {
+      // Build system prompt with live pantry data
+      const systemPrompt = await buildSystemPrompt();
+
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1500,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: message }]
+        })
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error?.message || 'API error');
+      }
+
+      const data = await response.json();
+      const text = data.content?.[0]?.text || 'No response received.';
+      showResponse(titles[type] || titles.custom, text);
+
+    } catch (err) {
+      showError(err.message);
+    }
+  }
+
+  function sendCustom() {
+    const input = document.getElementById('customInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    sendRequest('custom', msg);
+    input.value = '';
+  }
+
+  // Allow Enter to send (Shift+Enter for newline)
+  document.getElementById('customInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendCustom();
+    }
+  });
+
+  // ─── UI HELPERS ──────────────────────────────────────────────────
+  function showLoading(title) {
+    const card = document.getElementById('responseCard');
+    const body = document.getElementById('responseBody');
+    const titleEl = document.getElementById('responseTitle');
+    titleEl.textContent = title;
+    body.innerHTML = `
+      <div class="loading">
+        <div class="loading-dots">
+          <span></span><span></span><span></span>
+        </div>
+        Thinking…
+      </div>`;
+    card.classList.add('visible');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function showResponse(title, text) {
+    document.getElementById('responseTitle').textContent = title;
+    document.getElementById('responseBody').innerHTML = formatResponse(text);
+  }
+
+  function showError(msg) {
+    document.getElementById('responseBody').innerHTML =
+      `<div class="error-msg">⚠️ ${msg}<br><small>Check your API key or try again.</small></div>`;
+  }
+
+  function clearResponse() {
+    document.getElementById('responseCard').classList.remove('visible');
+  }
+
+  function copyResponse() {
+    const text = document.getElementById('responseBody').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = event.target;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 1500);
+    });
+  }
+
+  // Simple markdown-ish formatter
+  function formatResponse(text) {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^# (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^\| (.+)$/gm, (match) => {
+        if (match.includes('---')) return '';
+        const cells = match.split('|').filter(c => c.trim());
+        return '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
+      })
+      .replace(/(<tr>.*<\/tr>\n?)+/g, (tables) => `<table>${tables}</table>`)
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>\n?)+/g, (list) => `<ul>${list}</ul>`)
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/^(?!<[htuol])/gm, '')
+      .replace(/(<p><\/p>)/g, '')
+      .trim();
+  }
+</script>
+</body>
+</html>
