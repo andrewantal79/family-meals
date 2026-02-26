@@ -1076,21 +1076,9 @@ No preamble.`
       // Invalidate cached system prompt so next plan call knows about this
       cachedSystemPrompt = null;
     } else {
-      showManualScheduleInstructions(row, meal.name);
+      // Write failed — show a simple error toast, don't expose manual instructions
+      showToast('⚠️ Could not save to sheet — try again.');
     }
-  }
-
-  function showManualScheduleInstructions(row, mealName) {
-    const body = document.getElementById('recipeBody');
-    body.innerHTML = `
-      <div class="success-msg" style="background:#FEF3C7; border-color:#FDE68A; color:#92400E;">
-        <strong>📋 To schedule manually:</strong><br>
-        Add this row to your <strong>Schedule</strong> tab in Google Sheets:<br><br>
-        <code style="font-size:11px; display:block; background:white; padding:8px; border-radius:6px; overflow-x:auto; line-height:1.8;">
-        ${row.join(' | ')}
-        </code><br>
-        <em>Columns: Week | Day | Meal Name | Cuisine | Is Vegetarian | Key Ingredients | Status | Rating | Scheduled By | Date Scheduled | Recipe URL</em>
-      </div>` + body.innerHTML;
   }
 
   // ─── MARK AS MADE MODAL ──────────────────────────────────────────
@@ -1158,11 +1146,10 @@ No preamble.`
   // ─── SHEET WRITE ─────────────────────────────────────────────────
   async function writeRowToSheet(tabName, row) {
     try {
-      const res = await fetch(SHEETS_WRITE_URL, {
+      const res = await fetch(PROXY_URL + '/sheet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'appendRow', tab: tabName, row }),
-        redirect: 'follow'
+        body: JSON.stringify({ action: 'appendRow', tab: tabName, row })
       });
       const data = await res.json();
       return data.ok === true;
@@ -1174,11 +1161,10 @@ No preamble.`
 
   async function updateRowInSheet(tabName, matchCol, matchVal, updates) {
     try {
-      const res = await fetch(SHEETS_WRITE_URL, {
+      const res = await fetch(PROXY_URL + '/sheet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'updateRow', tab: tabName, matchCol, matchVal, updates }),
-        redirect: 'follow'
+        body: JSON.stringify({ action: 'updateRow', tab: tabName, matchCol, matchVal, updates })
       });
       const data = await res.json();
       return data.ok === true;
