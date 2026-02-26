@@ -1005,3 +1005,261 @@ Return ONLY a JSON object, no markdown:
 (bullet list)
 
 ## Steps
+(numbered list)
+
+## Leftover Idea
+(one sentence)
+
+No preamble.`
+      }]);
+
+      document.getElementById('recipeLoading').style.display = 'none';
+      document.getElementById('recipeBody').innerHTML = formatText(recipe);
+      document.getElementById('recipeActions').style.display = 'flex';
+      document.getElementById('scheduleBtn').style.display = 'flex';
+
+    } catch (err) {
+      document.getElementById('recipeLoading').style.display = 'none';
+      document.getElementById('recipeBody').innerHTML =
+        `<div class="error-msg">⚠️ ${err.message}</div>`;
+    }
+  }
+
+  // ─── SCHEDULE MODAL ──────────────────────────────────────────────
+  function openScheduleModal() {
+    const meal = currentPlan[currentMealIndex];
+    document.getElementById('scheduleModalSubtitle').textContent =
+      `Scheduling "${meal.name}" for the week of ${weekLabel(currentWeekMonday)}.`;
+    // Pre-select the meal's day if available
+    const daySelect = document.getElementById('scheduleDay');
+    if (meal.day) {
+      for (let i = 0; i < daySelect.options.length; i++) {
+        if (daySelect.options[i].value === meal.day) { daySelect.selectedIndex = i; break; }
+      }
+    }
+    document.getElementById('scheduleModal').classList.add('open');
+  }
+
+  async function confirmSchedule() {
+    const meal = currentPlan[currentMealIndex];
+    const day = document.getElementById('scheduleDay').value;
+    const scheduledBy = document.getElementById('scheduleBy').value;
+    const weekStr = weekKey(currentWeekMonday);
+    const today = new Date().toLocaleDateString('en-US');
+
+    closeModal('scheduleModal');
+
+    // Build the row to append to the Schedule tab
+    const row = [
+      weekStr, day, meal.name, meal.cuisine,
+      meal.isVegetarian ? 'true' : 'false',
+      meal.keyIngredients, 'scheduled', '',
+      scheduledBy, today, meal.recipeUrl || ''
+    ];
+
+    // Write to sheet via Apps Script web app (if configured) or show manual fallback
+    const success = await writeRowToSheet('Schedule', row);
+
+    if (success) {
+      // Update local plan state
+      meal.day = day;
+      meal.isScheduled = true;
+      meal.status = 'scheduled';
+      currentPlan[currentMealIndex] = meal;
+
+      // Hide schedule button
+      document.getElementById('scheduleBtn').style.display = 'none';
+
+      // Show confirmation
+      const body = document.getElementById('recipeBody');
+      body.innerHTML = `<div class="success-msg">📅 "${meal.name}" scheduled for ${day}, week of ${weekLabel(currentWeekMonday)}!</div>` + body.innerHTML;
+
+      // Invalidate cached system prompt so next plan call knows about this
+      cachedSystemPrompt = null;
+    } else {
+      showManualScheduleInstructions(row, meal.name);
+    }
+  }
+
+  function showManualScheduleInstructions(row, mealName) {
+    const body = document.getElementById('recipeBody');
+    body.innerHTML = `
+      <div class="success-msg" style="background:#FEF3C7; border-color:#FDE68A; color:#92400E;">
+        <strong>📋 To schedule manually:</strong><br>
+        Add this row to your <strong>Schedule</strong> tab in Google Sheets:<br><br>
+        <code style="font-size:11px; display:block; background:white; padding:8px; border-radius:6px; overflow-x:auto; line-height:1.8;">
+        ${row.join(' | ')}
+        </code><br>
+        <em>Columns: Week | Day | Meal Name | Cuisine | Is Vegetarian | Key Ingredients | Status | Rating | Scheduled By | Date Scheduled | Recipe URL</em>
+      </div>` + body.innerHTML;
+  }
+
+  // ─── MARK AS MADE MODAL ──────────────────────────────────────────
+  function openMadeModal(mealKey, mealName) {
+    madeModalMealKey = mealKey;
+    selectedRating = null;
+    document.getElementById('thumbsUp').classList.remove('selected');
+    document.getElementById('thumbsDown').classList.remove('selected');
+    document.getElementById('madeNotes').value = '';
+    document.getElementById('madeModalTitle').textContent = `You made "${mealName}"! 🎉`;
+    document.getElementById('madeModal').classList.add('open');
+  }
+
+  function selectRating(direction) {
+    selectedRating = direction;
+    document.getElementById('thumbsUp').classList.toggle('selected', direction === 'up');
+    document.getElementById('thumbsDown').classList.toggle('selected', direction === 'down');
+  }
+
+  async function confirmMade() {
+    if (!madeModalMealKey) return;
+    const notes = document.getElementById('madeNotes').value.trim();
+    const rating = selectedRating === 'up' ? 'thumbs_up' : selectedRating === 'down' ? 'thumbs_down' : '';
+
+    closeModal('madeModal');
+
+    // Find the meal in currentPlan and update its status
+    const [weekStr, day] = madeModalMealKey.split('|');
+    const mealInPlan = currentPlan?.find(m => m.day === day && m.isScheduled);
+
+    if (mealInPlan) {
+      mealInPlan.status = 'made';
+      // Re-render so "I Made This" button disappears and badge updates
+      renderPlanCards();
+    }
+
+    // Show toast
+    showToast('✓ Marked as made' + (rating ? (rating === 'thumbs_up' ? ' · 👍' : ' · 👎') : '') + '. Remember to update your pantry!');
+  }
+
+  // ─── GROCERY LIST ────────────────────────────────────────────────
+  async function getGroceryList() {
+    showView('home');
+    const cookMeals = currentPlan?.filter(m => m.type === 'cook') || [];
+    const planSummary = cookMeals.map(m => `${m.day}: ${m.name}`).join(', ') || 'this week';
+    sendRequest('custom',
+      `Generate a grocery list for week of ${weekLabel(currentWeekMonday)}: ${planSummary}. Cross-reference the pantry and staples — only list what we actually need to buy. Show each item with an estimated price and a total.`
+    );
+  }
+
+  // ─── SHEET WRITE ─────────────────────────────────────────────────
+  async function writeRowToSheet(tabName, row) {
+    // When SHEETS_WRITE_URL is configured, this will POST to the Apps Script web app
+    if (!SHEETS_WRITE_URL) return false;
+    try {
+      const res = await fetch(SHEETS_WRITE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tab: tabName, row })
+      });
+      return res.ok;
+    } catch { return false; }
+  }
+
+  // ─── GENERAL REQUESTS ────────────────────────────────────────────
+  const PRESETS = {
+    grocery: `Generate a grocery list for this week. Cross-reference the pantry and staples first. Show each item with estimated price and a total.`,
+    pantry:  'What is currently in the pantry? Flag anything that should be used soon based on when it was added.',
+    surprise:'Suggest one creative meal I can make mostly from what is already on hand. Give me the full recipe.'
+  };
+
+  async function sendRequest(type, customMessage = null) {
+    const message = customMessage || PRESETS[type];
+    const titles = { grocery:'🛒 Grocery List', pantry:'🧺 Pantry Check', surprise:'✨ Meal Idea', custom:'💬 Response' };
+    showLoading(titles[type] || titles.custom);
+    try {
+      const text = await callClaude([{ role: 'user', content: message }]);
+      showResponse(titles[type] || titles.custom, text);
+    } catch (err) { showError(err.message); }
+  }
+
+  function sendCustom() {
+    const input = document.getElementById('customInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    sendRequest('custom', msg);
+    input.value = '';
+  }
+
+  document.getElementById('customInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendCustom(); }
+  });
+
+  // ─── MODAL HELPERS ───────────────────────────────────────────────
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+  // Close modal on overlay tap
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  });
+
+  // ─── TOAST ───────────────────────────────────────────────────────
+  function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--ink); color: white; padding: 12px 20px;
+      border-radius: 30px; font-size: 13px; font-weight: 500;
+      z-index: 200; white-space: nowrap; animation: slideUp 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    `;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  // ─── UI HELPERS ──────────────────────────────────────────────────
+  function showLoading(title) {
+    const card = document.getElementById('responseCard');
+    document.getElementById('responseTitle').textContent = title;
+    document.getElementById('responseBody').innerHTML = `
+      <div class="loading">
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+        Thinking…
+      </div>`;
+    card.classList.add('visible');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function showResponse(title, text) {
+    document.getElementById('responseTitle').textContent = title;
+    document.getElementById('responseBody').innerHTML = formatText(text);
+  }
+
+  function showError(msg) {
+    document.getElementById('responseBody').innerHTML =
+      `<div class="error-msg">⚠️ ${msg}<br><small>Check your connection and try again.</small></div>`;
+  }
+
+  function clearResponse() { document.getElementById('responseCard').classList.remove('visible'); }
+
+  function copyResponse() {
+    navigator.clipboard.writeText(document.getElementById('responseBody').innerText).then(() => {
+      const btn = event.target;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 1500);
+    });
+  }
+
+  function formatText(text) {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^#{1,3} (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^\| (.+)$/gm, match => {
+        if (match.includes('---')) return '';
+        const cells = match.split('|').filter(c => c.trim());
+        return '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
+      })
+      .replace(/(<tr>[\s\S]*?<\/tr>\n?)+/g, t => `<table>${t}</table>`)
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>\n?)+/g, l => `<ul>${l}</ul>`)
+      .replace(/\n\n/g, '</p><p>')
+      .trim();
+  }
+</script>
+</body>
+</html>
