@@ -845,15 +845,17 @@ Return ONLY a valid JSON array of 2 objects. No markdown, no explanation.
     container.innerHTML = '';
 
     currentPlan.forEach((meal, i) => {
+      const el = document.createElement('div');
+
       if (meal.type === 'leftover') {
-        container.innerHTML += `
-          <div class="leftover-card">
-            <div class="leftover-icon">♻️</div>
-            <div>
-              <div class="leftover-label">${meal.day} · Leftovers</div>
-              <div class="leftover-name">${meal.name}</div>
-            </div>
+        el.className = 'leftover-card';
+        el.innerHTML = `
+          <div class="leftover-icon">♻️</div>
+          <div>
+            <div class="leftover-label">${meal.day} · Leftovers</div>
+            <div class="leftover-name">${meal.name}</div>
           </div>`;
+
       } else if (meal.isScheduled) {
         const isMade = meal.status === 'made';
         const typeTag = meal.isVegetarian
@@ -861,46 +863,61 @@ Return ONLY a valid JSON array of 2 objects. No markdown, no explanation.
           : `<span class="meal-tag fish">🐟 Fish</span>`;
         const urlTag = meal.recipeUrl ? `<span class="meal-tag url-tag">🔗 External recipe</span>` : '';
 
-        container.innerHTML += `
-          <div class="meal-card is-scheduled">
-            <div class="meal-card-inner">
-              <div class="meal-day">${meal.day}</div>
-              <div class="meal-info">
-                <div class="meal-name">${meal.name}</div>
-                <div class="meal-key-ingredients">${meal.keyIngredients || '—'}</div>
-                <div class="meal-tags">
-                  ${typeTag}
-                  ${urlTag}
-                  <span class="meal-tag scheduled-tag">${isMade ? '✓ Made' : '📅 Scheduled'}</span>
-                </div>
+        el.className = 'meal-card is-scheduled';
+        el.innerHTML = `
+          <div class="meal-card-inner">
+            <div class="meal-day">${meal.day}</div>
+            <div class="meal-info">
+              <div class="meal-name">${meal.name}</div>
+              <div class="meal-key-ingredients">${meal.keyIngredients || '—'}</div>
+              <div class="meal-tags">
+                ${typeTag}${urlTag}
+                <span class="meal-tag scheduled-tag">${isMade ? '✓ Made' : '📅 Scheduled'}</span>
               </div>
             </div>
-            ${!isMade ? `
-            <div class="scheduled-actions">
-              <button class="sched-btn view" onclick="viewScheduledRecipe(${i})">View Recipe</button>
-              <button class="sched-btn made" onclick="openMadeModal('${weekKey(currentWeekMonday)}|${meal.day}', '${meal.name.replace(/'/g,"\\'")}')">I Made This</button>
-            </div>` : ''}
-          </div>`;
+          </div>
+          ${!isMade ? `<div class="scheduled-actions">
+            <button class="sched-btn view" data-action="viewScheduled" data-index="${i}">View Recipe</button>
+            <button class="sched-btn made" data-action="markMade" data-index="${i}">I Made This</button>
+          </div>` : ''}`;
+
       } else {
         const typeTag = meal.isVegetarian
           ? `<span class="meal-tag veggie">🌿 Vegetarian</span>`
           : `<span class="meal-tag fish">🐟 Fish</span>`;
         const cuisineTag = `<span class="meal-tag">${meal.cuisine}</span>`;
 
-        container.innerHTML += `
-          <div class="meal-card" onclick="viewRecipe(${i})">
-            <div class="meal-card-inner">
-              <div class="meal-day">${meal.day}</div>
-              <div class="meal-info">
-                <div class="meal-name">${meal.name}</div>
-                <div class="meal-key-ingredients">${meal.keyIngredients}</div>
-                <div class="meal-tags">${typeTag}${cuisineTag}</div>
-              </div>
-              <div class="meal-arrow">›</div>
+        el.className = 'meal-card';
+        el.dataset.action = 'viewRecipe';
+        el.dataset.index = i;
+        el.innerHTML = `
+          <div class="meal-card-inner">
+            <div class="meal-day">${meal.day}</div>
+            <div class="meal-info">
+              <div class="meal-name">${meal.name}</div>
+              <div class="meal-key-ingredients">${meal.keyIngredients}</div>
+              <div class="meal-tags">${typeTag}${cuisineTag}</div>
             </div>
+            <div class="meal-arrow">›</div>
           </div>`;
       }
+
+      container.appendChild(el);
     });
+
+    // Event delegation — handles all card and button clicks safely
+    container.onclick = (e) => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const index  = parseInt(btn.dataset.index);
+      if (action === 'viewRecipe')    viewRecipe(index);
+      if (action === 'viewScheduled') viewScheduledRecipe(index);
+      if (action === 'markMade') {
+        const meal = currentPlan[index];
+        openMadeModal(weekKey(currentWeekMonday) + '|' + meal.day, meal.name);
+      }
+    };
 
     document.getElementById('planActions').style.display = 'flex';
   }
