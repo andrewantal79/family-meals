@@ -339,6 +339,56 @@
 
   footer { text-align: center; padding: 20px; font-size: 11px; color: var(--muted); }
 
+  /* Grocery checklist */
+  .grocery-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .grocery-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; }
+  .grocery-total { font-size: 15px; font-weight: 500; color: var(--accent); }
+  .grocery-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; background: var(--card);
+    border: 1.5px solid var(--border); border-radius: 12px;
+    margin-bottom: 8px; cursor: pointer; transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .grocery-item:active { transform: scale(0.99); }
+  .grocery-item.checked { background: var(--green-light); border-color: #86EFAC; }
+  .grocery-checkbox {
+    width: 22px; height: 22px; border-radius: 6px;
+    border: 2px solid var(--border); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; background: white;
+  }
+  .grocery-item.checked .grocery-checkbox {
+    background: var(--green); border-color: var(--green); color: white; font-size: 13px;
+  }
+  .grocery-item-info { flex: 1; min-width: 0; }
+  .grocery-item-name { font-size: 14px; font-weight: 500; color: var(--ink); }
+  .grocery-item.checked .grocery-item-name { text-decoration: line-through; color: var(--muted); }
+  .grocery-item-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .grocery-item-price { font-size: 13px; font-weight: 500; color: var(--ink); flex-shrink: 0; }
+  .grocery-item.checked .grocery-item-price { color: var(--muted); }
+  .grocery-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .grocery-send-btn {
+    flex: 1; padding: 14px; border-radius: 12px; border: none;
+    background: var(--green); color: white;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; display: none;
+  }
+  .grocery-send-btn.visible { display: block; animation: slideUp 0.2s ease; }
+  .grocery-send-btn:hover { background: #2D5038; }
+  .grocery-send-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .grocery-clear-btn {
+    padding: 14px 20px; border-radius: 12px;
+    background: var(--cream); color: var(--muted);
+    border: 1.5px solid var(--border);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .grocery-clear-btn:hover { border-color: var(--accent); color: var(--ink); }
+
   .response-body h3, .recipe-body h3 { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; margin: 16px 0 8px; }
   .response-body table, .recipe-body table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
   .response-body th, .recipe-body th { background: var(--cream); padding: 8px 10px; text-align: left; font-weight: 500; font-size: 11px; border-bottom: 2px solid var(--border); }
@@ -391,11 +441,25 @@
       <div class="response-header">
         <span class="response-title" id="responseTitle">Response</span>
         <div class="response-actions">
-          <button class="resp-action-btn" onclick="copyResponse()">Copy</button>
+          <button class="resp-action-btn" id="copyBtn" onclick="copyResponse()">Copy</button>
           <button class="resp-action-btn" onclick="clearResponse()">Clear</button>
         </div>
       </div>
       <div class="response-body" id="responseBody"></div>
+      <!-- Grocery checklist (shown instead of response body for grocery requests) -->
+      <div id="groceryChecklist" style="display:none; padding: 16px;">
+        <div class="grocery-header">
+          <div class="grocery-title">🛒 Grocery List</div>
+          <div class="grocery-total" id="groceryTotal"></div>
+        </div>
+        <div id="groceryItems"></div>
+        <div class="grocery-actions">
+          <button class="grocery-send-btn" id="grocerySendBtn" onclick="sendCheckedToPantry()">
+            🧺 Add checked items to pantry
+          </button>
+          <button class="grocery-clear-btn" onclick="clearResponse()">Clear</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1137,28 +1201,156 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
   // GROCERY LIST
   async function getGroceryList() {
     showView('home');
-    const cookMeals = (currentPlan || []).filter(m => m.type === 'cook');
-    const summary   = cookMeals.map(m => m.day + ': ' + m.name).join(', ') || 'this week';
-    sendRequest('custom',
+    const cookMeals = (currentPlan || []).filter(function(m) { return m.type === 'cook'; });
+    const summary   = cookMeals.map(function(m) { return m.day + ': ' + m.name; }).join(', ') || 'this week';
+    sendGroceryRequest(
       'Generate a grocery list for week of ' + weekLabel(currentWeekMonday) + ': ' + summary +
-      '. Cross-reference the pantry and staples — only list what we actually need to buy. Show each item with an estimated price and a total.');
+      '. Cross-reference the pantry and staples — only list what we actually need to buy. Include estimated price per item.');
   }
 
   // GENERAL REQUESTS
   const PRESETS = {
-    grocery: 'Generate a grocery list for this week. Cross-reference the pantry and staples first. Show each item with estimated price and a total.',
     pantry:  'What is currently in the pantry? Flag anything that should be used soon based on when it was added.',
     surprise:'Suggest one creative meal I can make mostly from what is already on hand. Give me the full recipe.'
   };
 
   async function sendRequest(type, customMessage) {
+    // Grocery list gets special treatment — returns JSON for checklist UI
+    if (type === 'grocery' || (type === 'custom' && customMessage && customMessage.includes('grocery list'))) {
+      return sendGroceryRequest(customMessage);
+    }
     const message = customMessage || PRESETS[type];
-    const titles  = { grocery:'🛒 Grocery List', pantry:'🧺 Pantry Check', surprise:'✨ Meal Idea', custom:'💬 Response' };
+    const titles  = { pantry:'🧺 Pantry Check', surprise:'✨ Meal Idea', custom:'💬 Response' };
     showLoading(titles[type] || titles.custom);
     try {
       const text = await callClaude([{ role: 'user', content: message }]);
       showResponse(titles[type] || titles.custom, text);
     } catch (err) { showError(err.message); }
+  }
+
+  async function sendGroceryRequest(customMessage) {
+    showLoading('🛒 Grocery List');
+    // Hide copy button for checklist view
+    document.getElementById('copyBtn').style.display = 'none';
+    try {
+      const baseMsg = customMessage ||
+        'Generate a grocery list for this week. Cross-reference the pantry and staples first — only items we actually need to buy.';
+
+      const text = await callClaude([{ role: 'user', content:
+        baseMsg + '\n\nReturn ONLY a valid JSON array. No markdown, no explanation, no total line.' +
+        '\nEach item: {"name":"Item Name","quantity":"2 fillets","price":12.00}' +
+        '\nMatch ingredient names exactly to what is already in the pantry when possible (same capitalization).' +
+        '\nReturn the JSON array only.'
+      }], 1500);
+
+      const clean = text.replace(/```json|```/g, '').trim();
+      const items = JSON.parse(clean);
+      showGroceryChecklist(items);
+    } catch (err) {
+      document.getElementById('copyBtn').style.display = '';
+      showError(err.message);
+    }
+  }
+
+  // Grocery checklist state
+  let groceryItems = [];
+
+  function showGroceryChecklist(items) {
+    groceryItems = items.map(function(item) {
+      return Object.assign({}, item, { checked: false });
+    });
+
+    document.getElementById('responseBody').style.display = 'none';
+    document.getElementById('groceryChecklist').style.display = 'block';
+    document.getElementById('responseCard').classList.add('visible');
+
+    renderGroceryItems();
+    document.getElementById('responseCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function renderGroceryItems() {
+    const container = document.getElementById('groceryItems');
+    container.innerHTML = '';
+
+    var checkedCount = 0;
+    var total = 0;
+
+    groceryItems.forEach(function(item, i) {
+      if (item.checked) { checkedCount++; total += item.price || 0; }
+
+      var el = document.createElement('div');
+      el.className = 'grocery-item' + (item.checked ? ' checked' : '');
+      el.dataset.index = i;
+      el.innerHTML =
+        '<div class="grocery-checkbox">' + (item.checked ? '✓' : '') + '</div>' +
+        '<div class="grocery-item-info">' +
+          '<div class="grocery-item-name">' + item.name + '</div>' +
+          '<div class="grocery-item-detail">' + (item.quantity || '') + '</div>' +
+        '</div>' +
+        '<div class="grocery-item-price">$' + (item.price ? item.price.toFixed(2) : '—') + '</div>';
+
+      container.appendChild(el);
+    });
+
+    // Event delegation for checkbox taps
+    container.onclick = function(e) {
+      var item = e.target.closest('[data-index]');
+      if (!item) return;
+      var idx = parseInt(item.dataset.index);
+      groceryItems[idx].checked = !groceryItems[idx].checked;
+      renderGroceryItems();
+    };
+
+    // Update total and send button
+    var checkedTotal = groceryItems.filter(function(i) { return i.checked; })
+      .reduce(function(sum, i) { return sum + (i.price || 0); }, 0);
+    var grandTotal = groceryItems.reduce(function(sum, i) { return sum + (i.price || 0); }, 0);
+
+    document.getElementById('groceryTotal').textContent =
+      checkedCount > 0
+        ? '$' + checkedTotal.toFixed(2) + ' checked / $' + grandTotal.toFixed(2) + ' total'
+        : '$' + grandTotal.toFixed(2) + ' estimated total';
+
+    var sendBtn = document.getElementById('grocerySendBtn');
+    if (checkedCount > 0) {
+      sendBtn.classList.add('visible');
+      sendBtn.textContent = '🧺 Add ' + checkedCount + ' item' + (checkedCount > 1 ? 's' : '') + ' to pantry';
+    } else {
+      sendBtn.classList.remove('visible');
+    }
+  }
+
+  async function sendCheckedToPantry() {
+    var checked = groceryItems.filter(function(i) { return i.checked; });
+    if (!checked.length) return;
+
+    var btn = document.getElementById('grocerySendBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Adding to pantry…';
+
+    var results = await Promise.all(checked.map(function(item) {
+      return sheetWrite({
+        action: 'upsertPantryItem',
+        item: { name: item.name, quantity: item.quantity, stored: 'Fridge' }
+      });
+    }));
+
+    var successCount = results.filter(Boolean).length;
+    btn.disabled = false;
+
+    if (successCount === checked.length) {
+      btn.textContent = '✓ Added to pantry!';
+      btn.style.background = '#15803D';
+      // Invalidate system prompt so next Claude call sees updated pantry
+      cachedSystemPrompt = null;
+      setTimeout(function() {
+        btn.textContent = '🧺 Add ' + checked.length + ' item' + (checked.length > 1 ? 's' : '') + ' to pantry';
+        btn.style.background = '';
+      }, 2500);
+    } else {
+      btn.textContent = '⚠️ Some items failed — try again';
+      setTimeout(function() { renderGroceryItems(); }, 2500);
+    }
   }
 
   function sendCustom() {
@@ -1211,7 +1403,13 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
       '<div class="error-msg">⚠️ ' + msg + '<br><small>Check your connection and try again.</small></div>';
   }
 
-  function clearResponse() { document.getElementById('responseCard').classList.remove('visible'); }
+  function clearResponse() {
+    document.getElementById('responseCard').classList.remove('visible');
+    document.getElementById('responseBody').style.display = '';
+    document.getElementById('groceryChecklist').style.display = 'none';
+    document.getElementById('copyBtn').style.display = '';
+    groceryItems = [];
+  }
 
   function copyResponse() {
     navigator.clipboard.writeText(document.getElementById('responseBody').innerText).then(function() {
