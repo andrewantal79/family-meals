@@ -539,7 +539,8 @@
 
     <div class="modal-field">
       <label class="modal-label">Notes (optional)</label>
-      <input type="text" class="modal-input" id="madeNotes" placeholder="e.g. Reduce salt next time…">
+      <input type="text" class="modal-input" id="madeNotes" placeholder="e.g. Reduce salt next time…" maxlength="140" oninput="updateNotesCount()">
+      <div style="font-size:11px; color:var(--muted); text-align:right; margin-top:4px;"><span id="notesCount">0</span>/140</div>
     </div>
 
     <div class="modal-field" style="background: var(--green-light); border-radius: 10px; padding: 12px; border: 1px solid #86EFAC;">
@@ -1053,7 +1054,7 @@ No preamble.`
       weekStr, day, meal.name, meal.cuisine,
       meal.isVegetarian ? 'true' : 'false',
       meal.keyIngredients, 'scheduled', '',
-      scheduledBy, today, meal.recipeUrl || ''
+      scheduledBy, today, meal.recipeUrl || '', ''
     ];
 
     // Write to sheet via Apps Script web app (if configured) or show manual fallback
@@ -1092,6 +1093,13 @@ No preamble.`
     document.getElementById('madeModal').classList.add('open');
   }
 
+  function updateNotesCount() {
+    const len = document.getElementById('madeNotes').value.length;
+    const el = document.getElementById('notesCount');
+    el.textContent = len;
+    el.style.color = len > 120 ? 'var(--accent)' : 'var(--muted)';
+  }
+
   function selectRating(direction) {
     selectedRating = direction;
     document.getElementById('thumbsUp').classList.toggle('selected', direction === 'up');
@@ -1115,15 +1123,12 @@ No preamble.`
     }
 
     // Write status + rating back to Schedule tab
-    // Match on Week (col 1) AND Day (col 2) — updateRow matches first found,
-    // so we match on a combined key by finding week+day together
+    // Match on Week (col 1) + Day (col 2) combined key
     const weekAndDay = weekStr + '|' + day;
-    const success = await updateRowInSheet('Schedule', 'week_day', weekAndDay, {
-      7: 'made',
-      8: rating,
-      // col 9 = notes if provided
-      ...(notes ? { 9: notes } : {})
-    });
+    const updates = { 7: 'made' };
+    if (rating) updates[8] = rating;
+    if (notes) updates[12] = notes;
+    const success = await updateRowInSheet('Schedule', 'week_day', weekAndDay, updates);
 
     const ratingEmoji = rating === 'thumbs_up' ? ' · 👍' : rating === 'thumbs_down' ? ' · 👎' : '';
     if (success) {
