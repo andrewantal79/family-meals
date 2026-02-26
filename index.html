@@ -788,12 +788,16 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
 
       if (meal.type === 'leftover') {
         el.className = 'leftover-card';
+        el.dataset.action = 'viewLeftover';
+        el.dataset.index = i;
+        el.style.cursor = 'pointer';
         el.innerHTML =
           '<div class="leftover-icon">♻️</div>' +
-          '<div>' +
+          '<div style="flex:1">' +
             '<div class="leftover-label">' + meal.day + ' · Leftovers</div>' +
             '<div class="leftover-name">' + meal.name + '</div>' +
-          '</div>';
+          '</div>' +
+          '<div style="color:#92400E;font-size:16px;margin-top:2px;">›</div>';
 
       } else if (meal.isScheduled) {
         const isMade = meal.status === 'made';
@@ -819,7 +823,6 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
           '</div>' +
           (!isMade
             ? '<div class="scheduled-actions">' +
-                '<button class="sched-btn view" data-action="viewScheduled" data-index="' + i + '">View Recipe</button>' +
                 '<button class="sched-btn made" data-action="markMade" data-index="' + i + '">I Made This</button>' +
               '</div>'
             : '');
@@ -841,7 +844,6 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
               '<div class="meal-key-ingredients">' + meal.keyIngredients + '</div>' +
               '<div class="meal-tags">' + typeTag + cuisineTag + '</div>' +
             '</div>' +
-            '<div class="meal-arrow">›</div>' +
           '</div>';
       }
 
@@ -857,6 +859,7 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
       const index  = parseInt(target.dataset.index);
       if (action === 'viewRecipe')    viewRecipe(index);
       if (action === 'viewScheduled') viewScheduledRecipe(index);
+      if (action === 'viewLeftover')  viewLeftoverRecipe(index);
       if (action === 'markMade') {
         e.stopPropagation();
         const meal = currentPlan[index];
@@ -913,6 +916,38 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
       document.getElementById('recipeLoading').style.display = 'none';
       document.getElementById('recipeBody').innerHTML = '<div class="error-msg">⚠️ ' + err.message + '</div>';
     }
+  }
+
+  // VIEW LEFTOVER RECIPE
+  function viewLeftoverRecipe(index) {
+    currentMealIndex = index;
+    const meal = currentPlan[index];
+    showView('recipe');
+    document.getElementById('recipeDayLabel').textContent = meal.day + ' · Leftovers';
+    document.getElementById('recipeTitle').textContent = meal.name;
+    document.getElementById('recipeBody').innerHTML = '';
+    document.getElementById('recipeActions').style.display = 'none';
+    document.getElementById('recipeLoading').style.display = 'flex';
+
+    // Hide schedule and swap buttons — leftovers don't need them
+    const schedBtn = document.getElementById('scheduleBtn');
+    const swapBtn  = document.getElementById('swapBtn');
+    schedBtn.style.display = 'none';
+    swapBtn.style.display = 'none';
+
+    callClaude([{ role: 'user', content:
+      'Give me quick repurposing instructions for turning leftover "' + meal.leftoverOf + '" into "' + meal.name + '" (pescatarian, serves 2).' +
+      '\n\nFormat:\n## What you need\n(short list of any additions needed beyond the leftovers)' +
+      '\n\n## Steps\n(3-5 numbered steps, concise and practical)' +
+      '\n\nNo preamble. Keep it short — this is a quick weeknight repurpose, not a full recipe.'
+    }]).then(function(text) {
+      document.getElementById('recipeLoading').style.display = 'none';
+      document.getElementById('recipeBody').innerHTML = formatText(text);
+      document.getElementById('recipeActions').style.display = 'flex';
+    }).catch(function(err) {
+      document.getElementById('recipeLoading').style.display = 'none';
+      document.getElementById('recipeBody').innerHTML = '<div class="error-msg">⚠️ ' + err.message + '</div>';
+    });
   }
 
   // SWAP MEAL
