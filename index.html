@@ -413,14 +413,11 @@
   <div class="view active" id="view-home">
     <div class="pantry-badge"><span>🥦</span> Pantry-first planning</div>
     <div class="actions">
-      <button class="action-btn primary" onclick="goToPlan()">
+      <button class="action-btn primary" onclick="goToPlan()" style="grid-column: span 2;">
         <span class="btn-icon">🗓</span>
         <div><div class="btn-label">Plan This Week</div><div class="btn-desc">3 cook nights + 2 leftover nights</div></div>
       </button>
-      <button class="action-btn" onclick="sendRequest('grocery')">
-        <span class="btn-icon">🛒</span>
-        <div><div class="btn-label">Grocery List</div><div class="btn-desc">Based on current meal plan</div></div>
-      </button>
+
       <button class="action-btn" onclick="sendRequest('pantry')">
         <span class="btn-icon">🧺</span>
         <div><div class="btn-label">Check Pantry</div><div class="btn-desc">What's on hand & use-soon items</div></div>
