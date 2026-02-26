@@ -1141,6 +1141,9 @@ No preamble.`
 
       // Invalidate cached system prompt so next plan call knows about this
       cachedSystemPrompt = null;
+
+      // Re-render plan cards so the green badge and View Recipe button appear
+      renderPlanCards();
     } else {
       // Write failed — show a simple error toast, don't expose manual instructions
       showToast('⚠️ Could not save to sheet — try again.');
