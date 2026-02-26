@@ -577,7 +577,25 @@
   function parseCSV(csv) {
     if (!csv) return null;
     return csv.split('\n')
-      .map(row => row.split(',').map(c => c.replace(/^"|"$/g, '').trim()))
+      .map(row => {
+        // Proper CSV parsing that handles quoted fields containing commas
+        const cells = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < row.length; i++) {
+          const ch = row[i];
+          if (ch === '"') {
+            inQuotes = !inQuotes;
+          } else if (ch === ',' && !inQuotes) {
+            cells.push(current.trim());
+            current = '';
+          } else {
+            current += ch;
+          }
+        }
+        cells.push(current.trim());
+        return cells;
+      })
       .filter(row => row.some(c => c.length));
   }
 
