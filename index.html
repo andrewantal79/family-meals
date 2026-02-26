@@ -1128,6 +1128,7 @@ No preamble.`
     const updates = { 7: 'made' };
     if (rating) updates[8] = rating;
     if (notes) updates[12] = notes;
+    console.log('confirmMade sending:', { weekAndDay, updates, notes, rating });
     const success = await updateRowInSheet('Schedule', 'week_day', weekAndDay, updates);
 
     const ratingEmoji = rating === 'thumbs_up' ? ' · 👍' : rating === 'thumbs_down' ? ' · 👎' : '';
