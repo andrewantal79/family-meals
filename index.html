@@ -17,6 +17,8 @@
     --green-light: #D1FAE5;
     --border: #E5DDD5;
     --card: #FFFFFF;
+    --scheduled-bg: #F0FDF4;
+    --scheduled-border: #86EFAC;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,7 +31,6 @@
     min-height: 100vh;
   }
 
-  /* Header */
   header {
     background: var(--ink);
     padding: 28px 24px 24px;
@@ -54,34 +55,21 @@
     background: rgba(61,107,79,0.12);
   }
   .header-eyebrow {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--accent-light);
-    margin-bottom: 8px;
-    position: relative;
-    z-index: 1;
+    font-size: 10px; font-weight: 500; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--accent-light);
+    margin-bottom: 8px; position: relative; z-index: 1;
   }
   header h1 {
     font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 400;
-    color: var(--warm-white);
-    line-height: 1.2;
-    position: relative;
-    z-index: 1;
+    font-size: 28px; font-weight: 400; color: var(--warm-white);
+    line-height: 1.2; position: relative; z-index: 1;
   }
   header h1 em { font-style: italic; color: var(--accent-light); }
   .header-sub {
-    font-size: 12px;
-    color: rgba(255,255,255,0.4);
-    margin-top: 6px;
-    position: relative;
-    z-index: 1;
+    font-size: 12px; color: rgba(255,255,255,0.4);
+    margin-top: 6px; position: relative; z-index: 1;
   }
 
-  /* Views */
   main { max-width: 480px; margin: 0 auto; }
   .view { display: none; padding: 24px 20px; }
   .view.active { display: block; animation: slideUp 0.25s ease; }
@@ -92,35 +80,18 @@
   }
 
   /* Action buttons */
-  .actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
   .action-btn {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: 16px;
-    padding: 20px 16px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 16px; padding: 20px 16px; cursor: pointer;
+    transition: all 0.2s ease; text-align: left;
+    display: flex; flex-direction: column; gap: 8px;
     -webkit-tap-highlight-color: transparent;
   }
   .action-btn:active { transform: scale(0.97); }
   .action-btn:hover { border-color: var(--accent); box-shadow: 0 4px 20px rgba(194,65,12,0.1); }
   .btn-icon { font-size: 28px; line-height: 1; }
-  .btn-label {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1.2;
-  }
+  .btn-label { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.2; }
   .btn-desc { font-size: 11px; color: var(--muted); font-weight: 400; line-height: 1.4; }
   .action-btn.primary { background: var(--ink); border-color: var(--ink); }
   .action-btn.primary .btn-label { color: var(--warm-white); }
@@ -128,224 +99,157 @@
 
   /* Custom input */
   .custom-input-section {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 24px;
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 16px; padding: 16px; margin-bottom: 24px;
   }
   .custom-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 10px;
-    display: block;
+    font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: block;
   }
   .custom-input-row { display: flex; gap: 10px; align-items: flex-end; }
   textarea {
-    flex: 1;
-    background: var(--cream);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 300;
-    color: var(--ink);
-    resize: none;
-    height: 52px;
-    outline: none;
-    transition: border-color 0.2s;
-    line-height: 1.5;
+    flex: 1; background: var(--cream); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 10px 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 300;
+    color: var(--ink); resize: none; height: 52px; outline: none;
+    transition: border-color 0.2s; line-height: 1.5;
   }
   textarea:focus { border-color: var(--accent); }
   textarea::placeholder { color: var(--muted); font-style: italic; }
   .send-btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    width: 44px;
-    height: 52px;
-    cursor: pointer;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    flex-shrink: 0;
+    background: var(--accent); color: white; border: none;
+    border-radius: 10px; width: 44px; height: 52px; cursor: pointer;
+    font-size: 18px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
   }
   .send-btn:hover { background: #9a3412; }
   .send-btn:active { transform: scale(0.95); }
 
-  /* General response card */
+  /* Response card */
   .response-card {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    display: none;
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 16px; overflow: hidden; display: none;
   }
   .response-card.visible { display: block; animation: slideUp 0.3s ease; }
   .response-header {
-    background: var(--ink);
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    background: var(--ink); padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
   }
-  .response-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 13px;
-    color: var(--warm-white);
-    font-style: italic;
-  }
+  .response-title { font-family: 'Playfair Display', serif; font-size: 13px; color: var(--warm-white); font-style: italic; }
   .response-actions { display: flex; gap: 8px; }
   .resp-action-btn {
-    background: rgba(255,255,255,0.1);
-    border: none;
-    border-radius: 6px;
-    color: rgba(255,255,255,0.7);
-    font-size: 11px;
-    font-family: 'DM Sans', sans-serif;
-    padding: 4px 8px;
-    cursor: pointer;
-    transition: all 0.2s;
+    background: rgba(255,255,255,0.1); border: none; border-radius: 6px;
+    color: rgba(255,255,255,0.7); font-size: 11px;
+    font-family: 'DM Sans', sans-serif; padding: 4px 8px; cursor: pointer; transition: all 0.2s;
   }
   .resp-action-btn:hover { background: rgba(255,255,255,0.2); color: white; }
   .response-body {
-    padding: 20px;
-    font-size: 14px;
-    line-height: 1.75;
-    color: var(--ink);
-    max-height: 60vh;
-    overflow-y: auto;
+    padding: 20px; font-size: 14px; line-height: 1.75;
+    color: var(--ink); max-height: 60vh; overflow-y: auto;
   }
+
+  /* ── WEEK SELECTOR ──────────────────────────────────── */
+  .week-selector {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 12px 16px; margin-bottom: 20px;
+  }
+  .week-nav-btn {
+    background: none; border: none; font-size: 20px; cursor: pointer;
+    color: var(--muted); padding: 4px 8px; border-radius: 8px;
+    transition: all 0.2s; line-height: 1;
+  }
+  .week-nav-btn:hover { background: var(--cream); color: var(--ink); }
+  .week-label-wrap { text-align: center; }
+  .week-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; font-weight: 600; color: var(--ink);
+  }
+  .week-sublabel { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
   /* ── MEAL PLAN VIEW ─────────────────────────────────── */
   .plan-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    display: flex; align-items: flex-start;
+    justify-content: space-between; margin-bottom: 16px;
   }
-  .plan-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    font-weight: 600;
-  }
+  .plan-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; }
   .plan-subtitle { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
   .meal-card {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    margin-bottom: 12px;
-    overflow: hidden;
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 14px; margin-bottom: 12px; overflow: hidden;
     transition: border-color 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
   .meal-card:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(194,65,12,0.08); }
   .meal-card:active { transform: scale(0.99); }
-
-  .meal-card-inner {
-    padding: 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
+  .meal-card.is-scheduled {
+    background: var(--scheduled-bg);
+    border-color: var(--scheduled-border);
+    cursor: default;
   }
+  .meal-card.is-scheduled:hover { border-color: var(--scheduled-border); box-shadow: none; }
+
+  .meal-card-inner { padding: 16px; display: flex; align-items: flex-start; gap: 14px; }
   .meal-day {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-    min-width: 38px;
-    margin-top: 3px;
-    flex-shrink: 0;
+    font-size: 10px; font-weight: 500; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted);
+    min-width: 38px; margin-top: 3px; flex-shrink: 0;
   }
   .meal-info { flex: 1; min-width: 0; }
   .meal-name {
     font-family: 'Playfair Display', serif;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1.3;
-    margin-bottom: 4px;
+    font-size: 16px; font-weight: 600; color: var(--ink);
+    line-height: 1.3; margin-bottom: 4px;
   }
   .meal-key-ingredients {
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.4;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 12px; color: var(--muted); line-height: 1.4;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .meal-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
   .meal-tag {
-    font-size: 10px;
-    font-weight: 500;
-    padding: 2px 8px;
-    border-radius: 20px;
-    background: var(--cream);
-    color: var(--muted);
-    border: 1px solid var(--border);
+    font-size: 10px; font-weight: 500; padding: 2px 8px;
+    border-radius: 20px; background: var(--cream);
+    color: var(--muted); border: 1px solid var(--border);
   }
   .meal-tag.fish { background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; }
   .meal-tag.veggie { background: var(--green-light); color: var(--green); border-color: #A7F3D0; }
-  .meal-arrow {
-    color: var(--muted);
-    font-size: 18px;
-    margin-top: 1px;
-    flex-shrink: 0;
-    transition: transform 0.2s, color 0.2s;
+  .meal-tag.scheduled-tag { background: #DCFCE7; color: #15803D; border-color: #86EFAC; }
+  .meal-tag.url-tag { background: #F3E8FF; color: #7E22CE; border-color: #D8B4FE; }
+
+  .meal-arrow { color: var(--muted); font-size: 18px; margin-top: 1px; flex-shrink: 0; transition: transform 0.2s, color 0.2s; }
+  .meal-card:not(.is-scheduled):hover .meal-arrow { transform: translateX(3px); color: var(--accent); }
+
+  /* Scheduled meal actions inline */
+  .scheduled-actions {
+    border-top: 1px solid var(--scheduled-border);
+    padding: 10px 16px;
+    display: flex; gap: 8px;
   }
-  .meal-card:hover .meal-arrow { transform: translateX(3px); color: var(--accent); }
+  .sched-btn {
+    flex: 1; padding: 8px 10px; border-radius: 8px; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; -webkit-tap-highlight-color: transparent;
+  }
+  .sched-btn.view { background: white; color: var(--ink); border: 1px solid var(--border); }
+  .sched-btn.made { background: var(--green); color: white; }
+  .sched-btn.made:hover { background: #2D5038; }
+  .sched-btn.view:hover { border-color: var(--accent); }
 
   .leftover-card {
-    background: #FFFBEB;
-    border: 1.5px solid #FDE68A;
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin-bottom: 12px;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
+    background: #FFFBEB; border: 1.5px solid #FDE68A;
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 12px;
+    display: flex; gap: 12px; align-items: flex-start;
   }
   .leftover-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
-  .leftover-label {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: #92400E;
-    margin-bottom: 3px;
-  }
-  .leftover-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--ink);
-  }
+  .leftover-label { font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: #92400E; margin-bottom: 3px; }
+  .leftover-name { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 600; color: var(--ink); }
 
-  .plan-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-  }
+  .plan-actions { display: flex; gap: 10px; margin-top: 20px; }
   .plan-cta {
-    flex: 1;
-    padding: 14px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.2s;
+    flex: 1; padding: 14px; border-radius: 12px; border: none;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500; transition: all 0.2s;
     -webkit-tap-highlight-color: transparent;
   }
   .plan-cta.primary { background: var(--ink); color: white; }
@@ -355,49 +259,17 @@
 
   /* ── RECIPE DETAIL VIEW ─────────────────────────────── */
   .back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--muted);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    margin-bottom: 20px;
-    transition: color 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; color: var(--muted);
+    background: none; border: none; cursor: pointer; padding: 0;
+    margin-bottom: 20px; transition: color 0.2s;
     -webkit-tap-highlight-color: transparent;
   }
   .back-btn:hover { color: var(--accent); }
-
-  .recipe-day-label {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .recipe-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 1.2;
-    margin-bottom: 20px;
-  }
-  .recipe-body {
-    font-size: 14px;
-    line-height: 1.8;
-    color: var(--ink);
-  }
-  .recipe-body h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 16px;
-    font-weight: 600;
-    margin: 20px 0 8px;
-    color: var(--ink);
-  }
+  .recipe-day-label { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .recipe-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 600; line-height: 1.2; margin-bottom: 20px; }
+  .recipe-body { font-size: 14px; line-height: 1.8; color: var(--ink); }
+  .recipe-body h3 { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; margin: 20px 0 8px; }
   .recipe-body h3:first-child { margin-top: 0; }
   .recipe-body p { margin-bottom: 10px; }
   .recipe-body ul, .recipe-body ol { padding-left: 20px; margin-bottom: 12px; }
@@ -405,55 +277,93 @@
   .recipe-body strong { font-weight: 500; color: var(--accent); }
 
   .recipe-detail-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 28px;
-    padding-top: 20px;
-    border-top: 1.5px solid var(--border);
+    display: flex; flex-direction: column; gap: 10px;
+    margin-top: 28px; padding-top: 20px; border-top: 1.5px solid var(--border);
   }
   .recipe-action-btn {
-    width: 100%;
-    padding: 15px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s;
+    width: 100%; padding: 15px; border-radius: 12px; border: none;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500; transition: all 0.2s;
     -webkit-tap-highlight-color: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
   }
-  .recipe-action-btn.swap {
-    background: var(--cream);
-    color: var(--ink);
-    border: 1.5px solid var(--border);
-  }
+  .recipe-action-btn.schedule { background: var(--green); color: white; }
+  .recipe-action-btn.schedule:hover { background: #2D5038; }
+  .recipe-action-btn.swap { background: var(--cream); color: var(--ink); border: 1.5px solid var(--border); }
   .recipe-action-btn.swap:hover { border-color: var(--accent); background: white; }
   .recipe-action-btn.keep { background: var(--ink); color: white; }
   .recipe-action-btn.keep:hover { background: #374151; }
+  .recipe-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── SCHEDULE CONFIRM / MADE / RATING MODALS ────────── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: flex; align-items: flex-end; justify-content: center;
+    z-index: 100; animation: fadeIn 0.2s ease;
+    display: none;
+  }
+  .modal-overlay.open { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: var(--card); border-radius: 20px 20px 0 0;
+    padding: 24px 24px 36px; width: 100%; max-width: 480px;
+    animation: slideModal 0.3s ease;
+  }
+  @keyframes slideModal {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; font-weight: 600; margin-bottom: 6px;
+  }
+  .modal-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+
+  .modal-field { margin-bottom: 16px; }
+  .modal-label { font-size: 11px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; display: block; }
+  .modal-input {
+    width: 100%; background: var(--cream); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
+    outline: none; transition: border-color 0.2s;
+  }
+  .modal-input:focus { border-color: var(--accent); }
+  .modal-select {
+    width: 100%; background: var(--cream); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
+    outline: none; cursor: pointer; appearance: none;
+  }
+
+  .modal-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+  .modal-btn {
+    width: 100%; padding: 15px; border-radius: 12px; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .modal-btn.primary { background: var(--ink); color: white; }
+  .modal-btn.primary:hover { background: #374151; }
+  .modal-btn.secondary { background: var(--cream); color: var(--ink); border: 1.5px solid var(--border); }
+  .modal-btn.secondary:hover { border-color: var(--accent); }
+  .modal-btn.green { background: var(--green); color: white; }
+  .modal-btn.green:hover { background: #2D5038; }
+
+  /* Rating buttons */
+  .rating-row { display: flex; gap: 12px; }
+  .rating-btn {
+    flex: 1; padding: 16px; border-radius: 12px; border: 2px solid var(--border);
+    font-size: 28px; cursor: pointer; transition: all 0.2s; background: var(--cream);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .rating-btn:hover { transform: scale(1.05); }
+  .rating-btn.thumbs-up:hover, .rating-btn.thumbs-up.selected { border-color: var(--green); background: var(--green-light); }
+  .rating-btn.thumbs-down:hover, .rating-btn.thumbs-down.selected { border-color: #EF4444; background: #FEF2F2; }
 
   /* Loading */
-  .loading {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 24px 0;
-    color: var(--muted);
-    font-size: 13px;
-    font-style: italic;
-  }
+  .loading { display: flex; align-items: center; gap: 10px; padding: 24px 0; color: var(--muted); font-size: 13px; font-style: italic; }
   .loading-dots { display: flex; gap: 4px; }
-  .loading-dots span {
-    width: 6px; height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: bounce 1.2s infinite;
-  }
+  .loading-dots span { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: bounce 1.2s infinite; }
   .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
   .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
   @keyframes bounce {
@@ -461,35 +371,23 @@
     30% { transform: translateY(-6px); opacity: 1; }
   }
 
-  /* Error */
-  .error-msg {
-    background: #FEF2F2;
-    border: 1px solid #FECACA;
-    border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: #991B1B;
-  }
+  /* Error / success */
+  .error-msg { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #991B1B; }
+  .success-msg { background: var(--green-light); border: 1px solid #86EFAC; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--green); margin-bottom: 12px; }
 
-  /* Misc */
-  .pantry-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--green-light);
-    color: var(--green);
-    font-size: 11px;
-    font-weight: 500;
-    padding: 4px 10px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-  }
-  footer {
-    text-align: center;
-    padding: 20px;
-    font-size: 11px;
-    color: var(--muted);
-  }
+  .pantry-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green-light); color: var(--green); font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px; margin-bottom: 20px; }
+
+  footer { text-align: center; padding: 20px; font-size: 11px; color: var(--muted); }
+
+  /* Shared text styles */
+  .response-body h3, .recipe-body h3 { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; margin: 16px 0 8px; }
+  .response-body table, .recipe-body table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+  .response-body th, .recipe-body th { background: var(--cream); padding: 8px 10px; text-align: left; font-weight: 500; font-size: 11px; border-bottom: 2px solid var(--border); }
+  .response-body td, .recipe-body td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  .response-body ul, .recipe-body ul, .response-body ol, .recipe-body ol { padding-left: 18px; margin-bottom: 10px; }
+  .response-body li, .recipe-body li { margin-bottom: 4px; }
+  .response-body strong, .recipe-body strong { font-weight: 500; color: var(--accent); }
+  .response-body p, .recipe-body p { margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -505,38 +403,24 @@
   <!-- ── HOME VIEW ──────────────────────────────────────── -->
   <div class="view active" id="view-home">
     <div class="pantry-badge"><span>🥦</span> Pantry-first planning</div>
-
     <div class="actions">
-      <button class="action-btn primary" onclick="planWeek()">
+      <button class="action-btn primary" onclick="goToPlan()">
         <span class="btn-icon">🗓</span>
-        <div>
-          <div class="btn-label">Plan This Week</div>
-          <div class="btn-desc">3 cook nights + 2 leftover nights</div>
-        </div>
+        <div><div class="btn-label">Plan This Week</div><div class="btn-desc">3 cook nights + 2 leftover nights</div></div>
       </button>
       <button class="action-btn" onclick="sendRequest('grocery')">
         <span class="btn-icon">🛒</span>
-        <div>
-          <div class="btn-label">Grocery List</div>
-          <div class="btn-desc">Based on current meal plan</div>
-        </div>
+        <div><div class="btn-label">Grocery List</div><div class="btn-desc">Based on current meal plan</div></div>
       </button>
       <button class="action-btn" onclick="sendRequest('pantry')">
         <span class="btn-icon">🧺</span>
-        <div>
-          <div class="btn-label">Check Pantry</div>
-          <div class="btn-desc">What's on hand & use-soon items</div>
-        </div>
+        <div><div class="btn-label">Check Pantry</div><div class="btn-desc">What's on hand & use-soon items</div></div>
       </button>
       <button class="action-btn" onclick="sendRequest('surprise')">
         <span class="btn-icon">✨</span>
-        <div>
-          <div class="btn-label">Surprise Me</div>
-          <div class="btn-desc">Something new from the pantry</div>
-        </div>
+        <div><div class="btn-label">Surprise Me</div><div class="btn-desc">Something new from the pantry</div></div>
       </button>
     </div>
-
     <div class="custom-input-section">
       <span class="custom-label">Ask anything</span>
       <div class="custom-input-row">
@@ -544,7 +428,6 @@
         <button class="send-btn" onclick="sendCustom()">↑</button>
       </div>
     </div>
-
     <div class="response-card" id="responseCard">
       <div class="response-header">
         <span class="response-title" id="responseTitle">Response</span>
@@ -560,14 +443,21 @@
   <!-- ── MEAL PLAN VIEW ─────────────────────────────────── -->
   <div class="view" id="view-plan">
     <div class="plan-header">
-      <div>
-        <div class="plan-title">This Week</div>
-        <div class="plan-subtitle">Tap a meal to see the recipe</div>
-      </div>
+      <div><div class="plan-title">Meal Plan</div><div class="plan-subtitle" id="planSubtitle">Tap a meal to see the recipe</div></div>
       <button class="back-btn" onclick="showView('home')">← Home</button>
     </div>
 
-    <div id="planLoading" class="loading">
+    <!-- Week selector -->
+    <div class="week-selector">
+      <button class="week-nav-btn" onclick="changeWeek(-1)">‹</button>
+      <div class="week-label-wrap">
+        <div class="week-label" id="weekLabel">Week of —</div>
+        <div class="week-sublabel" id="weekSublabel">Loading…</div>
+      </div>
+      <button class="week-nav-btn" onclick="changeWeek(1)">›</button>
+    </div>
+
+    <div id="planLoading" class="loading" style="display:none">
       <div class="loading-dots"><span></span><span></span><span></span></div>
       Planning your week…
     </div>
@@ -585,20 +475,20 @@
     <button class="back-btn" onclick="showView('plan')">← Back to plan</button>
     <div class="recipe-day-label" id="recipeDayLabel"></div>
     <div class="recipe-title" id="recipeTitle"></div>
-
     <div id="recipeLoading" class="loading" style="display:none">
       <div class="loading-dots"><span></span><span></span><span></span></div>
       Loading recipe…
     </div>
-
     <div class="recipe-body" id="recipeBody"></div>
-
     <div class="recipe-detail-actions" id="recipeActions" style="display:none">
+      <button class="recipe-action-btn schedule" id="scheduleBtn" onclick="openScheduleModal()">
+        📅 Schedule this meal
+      </button>
       <button class="recipe-action-btn swap" onclick="swapMeal()">
-        🔄 Find me a different meal for this night
+        🔄 Find me a different meal
       </button>
       <button class="recipe-action-btn keep" onclick="showView('plan')">
-        ✓ Keep this — back to plan
+        ✓ Back to plan
       </button>
     </div>
   </div>
@@ -607,36 +497,130 @@
 
 <footer>Antal Family Meals · Powered by Claude</footer>
 
+<!-- ── SCHEDULE MODAL ──────────────────────────────────── -->
+<div class="modal-overlay" id="scheduleModal">
+  <div class="modal">
+    <div class="modal-title">Schedule this meal</div>
+    <div class="modal-subtitle" id="scheduleModalSubtitle">Choose which night to schedule it for.</div>
+    <div class="modal-field">
+      <label class="modal-label">Night</label>
+      <select class="modal-select" id="scheduleDay">
+        <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+        <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Scheduled by</label>
+      <select class="modal-select" id="scheduleBy">
+        <option value="Andrew">Andrew</option>
+        <option value="Wife">Wife</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn green" onclick="confirmSchedule()">📅 Confirm Schedule</button>
+      <button class="modal-btn secondary" onclick="closeModal('scheduleModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MARK AS MADE MODAL ─────────────────────────────── -->
+<div class="modal-overlay" id="madeModal">
+  <div class="modal">
+    <div class="modal-title" id="madeModalTitle">You made this! 🎉</div>
+    <div class="modal-subtitle">How did it go?</div>
+
+    <div class="modal-field">
+      <label class="modal-label">Rate this recipe</label>
+      <div class="rating-row">
+        <button class="rating-btn thumbs-up" id="thumbsUp" onclick="selectRating('up')">👍</button>
+        <button class="rating-btn thumbs-down" id="thumbsDown" onclick="selectRating('down')">👎</button>
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">Notes (optional)</label>
+      <input type="text" class="modal-input" id="madeNotes" placeholder="e.g. Reduce salt next time…">
+    </div>
+
+    <div class="modal-field" style="background: var(--green-light); border-radius: 10px; padding: 12px; border: 1px solid #86EFAC;">
+      <div style="font-size: 12px; color: var(--green); font-weight: 500; margin-bottom: 4px;">🧺 Pantry update</div>
+      <div style="font-size: 13px; color: var(--ink);">After marking as made, remember to update your pantry in Google Sheets to remove ingredients you used. <em>OAuth writeback coming soon.</em></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-btn green" onclick="confirmMade()">✓ Mark as Made</button>
+      <button class="modal-btn secondary" onclick="closeModal('madeModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // ─── CONFIG ──────────────────────────────────────────────────────
   const PROXY_URL = 'https://family-meals-proxy.andrew-antal79.workers.dev';
   const SHEET_ID  = '1R432cBA83sJZ1yQgRpDjlHN-eJ40XUGiEYgYQN_UVfk';
-  const PANTRY_CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=Sheet1`;
-  const STAPLES_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=Staples`;
+  const PANTRY_CSV_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=Sheet1`;
+  const STAPLES_CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=Staples`;
+  const SCHEDULE_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=Schedule`;
 
-  const BASE_SYSTEM_PROMPT = `You are a meal planning assistant for the Antal household in Oak Park, IL (ZIP 60302).
-
-HOUSEHOLD PROFILE:
-- 2 adults, pescatarian (fish & shellfish fine, no meat). Vegetarian meals are equally valid — not every night needs fish.
-- Cuisines: Mediterranean, Asian, Mexican
-- Budget: under $150/week groceries
-- Prep time: 30 min or less
-- Structure: 3 cook nights + 2 leftover nights (leftovers repurposed creatively, not repeated)
-- Planning priority: pantry-first. Use what's on hand before deciding what to buy.
-
-BEHAVIOR:
-- Never ask for preferences — they are defined above
-- For meal plans: return structured JSON only (no explanation, no markdown fences)
-- For grocery lists: cross-reference pantry + staples, show item + estimated price, show total
-- For recipes: scale for 2, include ingredients, numbered steps, leftover repurposing note
-- Use Oak Park IL prices for estimates`;
+  // Google Sheets API (for writes) — requires Apps Script web app
+  // Set this to your deployed Apps Script web app URL when ready
+  const SHEETS_WRITE_URL = null; // placeholder for future OAuth/Apps Script writeback
 
   // ─── STATE ───────────────────────────────────────────────────────
-  let currentPlan = null;
-  let currentMealIndex = null;
+  let currentPlan       = null;
+  let currentMealIndex  = null;
   let cachedSystemPrompt = null;
+  let selectedRating    = null;
+  let madeModalMealKey  = null; // "weekStr|day" to identify which scheduled meal
+  let currentWeekMonday = getThisWeekMonday();
 
-  // ─── PANTRY ──────────────────────────────────────────────────────
+  // ─── WEEK HELPERS ────────────────────────────────────────────────
+  function getThisWeekMonday() {
+    const today = new Date();
+    const day = today.getDay(); // 0=Sun, 1=Mon…
+    const diff = day === 0 ? -6 : 1 - day;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diff);
+    monday.setHours(0,0,0,0);
+    return monday;
+  }
+
+  function weekKey(date) {
+    // Returns "YYYY-MM-DD" for the Monday of that week
+    return date.toISOString().split('T')[0];
+  }
+
+  function weekLabel(date) {
+    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  function weekEndLabel(date) {
+    const end = new Date(date);
+    end.setDate(date.getDate() + 6);
+    return end.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+  }
+
+  function isCurrentWeek(date) {
+    return weekKey(date) === weekKey(getThisWeekMonday());
+  }
+
+  function changeWeek(delta) {
+    currentWeekMonday = new Date(currentWeekMonday);
+    currentWeekMonday.setDate(currentWeekMonday.getDate() + (delta * 7));
+    updateWeekUI();
+    // Reset plan display for new week
+    document.getElementById('planCards').innerHTML = '';
+    document.getElementById('planActions').style.display = 'none';
+    planWeek();
+  }
+
+  function updateWeekUI() {
+    document.getElementById('weekLabel').textContent = `Week of ${weekLabel(currentWeekMonday)}`;
+    const tag = isCurrentWeek(currentWeekMonday) ? 'This week' : `through ${weekEndLabel(currentWeekMonday)}`;
+    document.getElementById('weekSublabel').textContent = tag;
+  }
+
+  // ─── PANTRY / SHEET FETCH ────────────────────────────────────────
   async function fetchCSV(url) {
     try {
       const res = await fetch(url, { redirect: 'follow' });
@@ -664,23 +648,87 @@ BEHAVIOR:
     ).join('\n');
   }
 
-  async function buildSystemPrompt() {
-    if (cachedSystemPrompt) return cachedSystemPrompt;
-    const [pantryCSV, staplesCSV] = await Promise.all([
+  // Parse schedule CSV and return meals scheduled for a given week
+  function getScheduledMeals(scheduleRows, weekStr) {
+    if (!scheduleRows || scheduleRows.length < 2) return [];
+    const headers = scheduleRows[0];
+    const weekIdx    = headers.indexOf('Week');
+    const dayIdx     = headers.indexOf('Day');
+    const nameIdx    = headers.indexOf('Meal Name');
+    const cuisineIdx = headers.indexOf('Cuisine');
+    const vegIdx     = headers.indexOf('Is Vegetarian');
+    const ingIdx     = headers.indexOf('Key Ingredients');
+    const statusIdx  = headers.indexOf('Status');
+    const urlIdx     = headers.indexOf('Recipe URL');
+
+    return scheduleRows.slice(1)
+      .filter(row => row[weekIdx] === weekStr)
+      .map(row => ({
+        week:          row[weekIdx],
+        day:           row[dayIdx],
+        name:          row[nameIdx],
+        cuisine:       row[cuisineIdx],
+        isVegetarian:  row[vegIdx] === 'true' || row[vegIdx] === 'TRUE',
+        keyIngredients:row[ingIdx],
+        status:        row[statusIdx] || 'scheduled',
+        type:          'cook',
+        isScheduled:   true,
+        recipeUrl:     row[urlIdx] || null
+      }));
+  }
+
+  async function buildSystemPrompt(forceRefresh = false) {
+    if (cachedSystemPrompt && !forceRefresh) return cachedSystemPrompt;
+
+    const [pantryCSV, staplesCSV, scheduleCSV] = await Promise.all([
       fetchCSV(PANTRY_CSV_URL),
-      fetchCSV(STAPLES_CSV_URL)
+      fetchCSV(STAPLES_CSV_URL),
+      fetchCSV(SCHEDULE_CSV_URL)
     ]);
+
     const pantryText  = csvToReadable(parseCSV(pantryCSV),  'ACTIVE PANTRY (Sheet1)');
     const staplesText = csvToReadable(parseCSV(staplesCSV), 'STAPLES (always assumed on hand)');
-    cachedSystemPrompt = `${BASE_SYSTEM_PROMPT}
+
+    // Get scheduled meals for current week
+    const weekStr = weekKey(currentWeekMonday);
+    const scheduleRows = parseCSV(scheduleCSV);
+    const scheduled = getScheduledMeals(scheduleRows, weekStr);
+
+    let scheduledText = 'SCHEDULED MEALS THIS WEEK: none';
+    if (scheduled.length > 0) {
+      scheduledText = `SCHEDULED MEALS THIS WEEK (already committed — treat their ingredients as unavailable for other meals):\n` +
+        scheduled.map(m => `- ${m.day}: ${m.name} (${m.cuisine}) — uses: ${m.keyIngredients}`).join('\n');
+    }
+
+    cachedSystemPrompt = `You are a meal planning assistant for the Antal household in Oak Park, IL (ZIP 60302).
+
+HOUSEHOLD PROFILE:
+- 2 adults, pescatarian (fish & shellfish fine, no meat). Vegetarian meals are equally valid.
+- Cuisines: Mediterranean, Asian, Mexican
+- Budget: under $150/week groceries
+- Prep time: 30 min or less
+- Structure: 3 cook nights + 2 leftover nights (leftovers repurposed creatively, not repeated)
+- Planning priority: pantry-first. Use what's on hand before deciding what to buy.
+
+BEHAVIOR:
+- Never ask for preferences — they are defined above
+- For meal plans: return structured JSON only (no markdown, no explanation)
+- For grocery lists: cross-reference pantry + staples + scheduled meal ingredients, show item + estimated price, show total
+- For recipes: scale for 2, include ingredients, numbered steps, leftover repurposing note
+- Use Oak Park IL prices for estimates
 
 --- LIVE PANTRY DATA (fetched now) ---
 ${pantryText}
 
 ${staplesText}
+
+${scheduledText}
 --- END PANTRY DATA ---
 
-Never add staples to the grocery list unless the user says they are out. Always build meals around active pantry items first.`;
+Never add staples to the grocery list unless the user says they are out.
+Build meals around active pantry items first.
+Do NOT suggest meals that use ingredients already committed to scheduled meals.`;
+
     return cachedSystemPrompt;
   }
 
@@ -712,38 +760,74 @@ Never add staples to the grocery list unless the user says they are out. Always 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  function goToPlan() {
+    showView('plan');
+    updateWeekUI();
+    if (!currentPlan) planWeek();
+  }
+
   // ─── PLAN WEEK ───────────────────────────────────────────────────
   async function planWeek() {
-    cachedSystemPrompt = null; // always re-fetch pantry for fresh plan
-    showView('plan');
+    cachedSystemPrompt = null;
     document.getElementById('planLoading').style.display = 'flex';
     document.getElementById('planCards').innerHTML = '';
     document.getElementById('planActions').style.display = 'none';
 
+    // First, load any already-scheduled meals for this week
+    const weekStr = weekKey(currentWeekMonday);
+    const scheduleCSV = await fetchCSV(SCHEDULE_CSV_URL);
+    const scheduleRows = parseCSV(scheduleCSV);
+    const alreadyScheduled = getScheduledMeals(scheduleRows, weekStr);
+    const scheduledDays = alreadyScheduled.map(m => m.day);
+
     try {
-      const raw = await callClaude([{
-        role: 'user',
-        content: `Plan this week's meals. Return ONLY a valid JSON array — no markdown, no explanation, nothing else.
+      // How many cook nights do we still need to fill?
+      const cookNightsNeeded = Math.max(0, 3 - alreadyScheduled.length);
+      const leftoverNightsNeeded = 2;
+      const totalNeeded = cookNightsNeeded + leftoverNightsNeeded;
 
-The array must have exactly 5 objects: 3 cook nights and 2 leftover nights, spread across the week.
+      let newMeals = [];
 
-Each object must use exactly this shape:
-{
-  "day": "Monday",
-  "type": "cook",
-  "name": "Meal Name",
-  "cuisine": "Mexican",
-  "isVegetarian": false,
-  "keyIngredients": "ingredient1, ingredient2, ingredient3",
-  "leftoverOf": null
-}
+      if (cookNightsNeeded > 0) {
+        const daysToAvoid = scheduledDays.length > 0
+          ? `Do not assign meals to these days (already scheduled): ${scheduledDays.join(', ')}.` : '';
 
-For leftover nights, set type to "leftover" and leftoverOf to the name of the cook meal it comes from.
+        const raw = await callClaude([{
+          role: 'user',
+          content: `Plan meals for the week of ${weekLabel(currentWeekMonday)}.
+${daysToAvoid}
+I need ${cookNightsNeeded} more cook night(s) and ${leftoverNightsNeeded} leftover night(s).
+Return ONLY a valid JSON array with exactly ${totalNeeded} objects. No markdown, no explanation.
+
+Each cook night object:
+{"day":"Tuesday","type":"cook","name":"Meal Name","cuisine":"Mexican","isVegetarian":false,"keyIngredients":"ing1, ing2, ing3","leftoverOf":null}
+
+Each leftover night object:
+{"day":"Wednesday","type":"leftover","name":"Repurposed version name","cuisine":"Mexican","isVegetarian":false,"keyIngredients":"","leftoverOf":"Original Meal Name"}
+
 Return the JSON array only.`
-      }]);
+        }]);
 
-      const clean = raw.replace(/```json|```/g, '').trim();
-      currentPlan = JSON.parse(clean);
+        const clean = raw.replace(/```json|```/g, '').trim();
+        newMeals = JSON.parse(clean);
+      } else {
+        // All cook nights scheduled — just need leftover suggestions
+        const raw = await callClaude([{
+          role: 'user',
+          content: `All cook nights for week of ${weekLabel(currentWeekMonday)} are already scheduled: ${alreadyScheduled.map(m => `${m.day}: ${m.name}`).join(', ')}.
+Suggest 2 leftover nights that repurpose those meals creatively.
+Return ONLY a valid JSON array of 2 objects. No markdown, no explanation.
+{"day":"Wednesday","type":"leftover","name":"Repurposed version name","cuisine":"Mexican","isVegetarian":false,"keyIngredients":"","leftoverOf":"Original Meal Name"}`
+        }]);
+        const clean = raw.replace(/```json|```/g, '').trim();
+        newMeals = JSON.parse(clean);
+      }
+
+      // Merge: scheduled meals + new AI meals, sort by day order
+      const dayOrder = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+      currentPlan = [...alreadyScheduled, ...newMeals]
+        .sort((a, b) => dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day));
+
       renderPlanCards();
 
     } catch (err) {
@@ -767,6 +851,33 @@ Return the JSON array only.`
               <div class="leftover-label">${meal.day} · Leftovers</div>
               <div class="leftover-name">${meal.name}</div>
             </div>
+          </div>`;
+      } else if (meal.isScheduled) {
+        const isMade = meal.status === 'made';
+        const typeTag = meal.isVegetarian
+          ? `<span class="meal-tag veggie">🌿 Vegetarian</span>`
+          : `<span class="meal-tag fish">🐟 Fish</span>`;
+        const urlTag = meal.recipeUrl ? `<span class="meal-tag url-tag">🔗 External recipe</span>` : '';
+
+        container.innerHTML += `
+          <div class="meal-card is-scheduled">
+            <div class="meal-card-inner">
+              <div class="meal-day">${meal.day}</div>
+              <div class="meal-info">
+                <div class="meal-name">${meal.name}</div>
+                <div class="meal-key-ingredients">${meal.keyIngredients || '—'}</div>
+                <div class="meal-tags">
+                  ${typeTag}
+                  ${urlTag}
+                  <span class="meal-tag scheduled-tag">${isMade ? '✓ Made' : '📅 Scheduled'}</span>
+                </div>
+              </div>
+            </div>
+            ${!isMade ? `
+            <div class="scheduled-actions">
+              <button class="sched-btn view" onclick="viewScheduledRecipe(${i})">View Recipe</button>
+              <button class="sched-btn made" onclick="openMadeModal('${weekKey(currentWeekMonday)}|${meal.day}', '${meal.name.replace(/'/g,"\\'")}')">I Made This</button>
+            </div>` : ''}
           </div>`;
       } else {
         const typeTag = meal.isVegetarian
@@ -796,7 +907,16 @@ Return the JSON array only.`
   async function viewRecipe(index) {
     currentMealIndex = index;
     const meal = currentPlan[index];
+    _loadRecipeView(meal, false);
+  }
 
+  async function viewScheduledRecipe(index) {
+    currentMealIndex = index;
+    const meal = currentPlan[index];
+    _loadRecipeView(meal, true);
+  }
+
+  async function _loadRecipeView(meal, isScheduled) {
     showView('recipe');
     document.getElementById('recipeDayLabel').textContent = `${meal.day} · ${meal.cuisine}`;
     document.getElementById('recipeTitle').textContent = meal.name;
@@ -804,12 +924,25 @@ Return the JSON array only.`
     document.getElementById('recipeActions').style.display = 'none';
     document.getElementById('recipeLoading').style.display = 'flex';
 
-    try {
-      const recipe = await callClaude([{
-        role: 'user',
-        content: `Give me the full recipe for "${meal.name}" (${meal.cuisine}, pescatarian, serves 2, 30 min or less).
+    // Hide schedule button if already scheduled
+    const schedBtn = document.getElementById('scheduleBtn');
+    schedBtn.style.display = isScheduled ? 'none' : 'flex';
 
-Include:
+    try {
+      let recipePrompt;
+
+      if (meal.recipeUrl) {
+        // External recipe — fetch URL content and ask Claude to format it
+        recipePrompt = `The user wants to make a recipe from this URL: ${meal.recipeUrl}
+If you can access the URL, extract and present the recipe formatted with:
+## Ingredients
+## Steps
+## Leftover Idea
+If you cannot access the URL (paywall, etc), say so clearly and suggest a similar recipe instead.
+Scale for 2 people, 30 min or less.`;
+      } else {
+        recipePrompt = `Give me the full recipe for "${meal.name}" (${meal.cuisine}, pescatarian, serves 2, 30 min or less).
+
 ## Ingredients
 (bullet list)
 
@@ -817,10 +950,12 @@ Include:
 (numbered list)
 
 ## Leftover Idea
-(one sentence on how to repurpose this as tomorrow's meal)
+(one sentence on how to repurpose this tomorrow)
 
-Be concise and practical. No preamble.`
-      }]);
+Be concise and practical. No preamble.`;
+      }
+
+      const recipe = await callClaude([{ role: 'user', content: recipePrompt }]);
 
       document.getElementById('recipeLoading').style.display = 'none';
       document.getElementById('recipeBody').innerHTML = formatText(recipe);
@@ -836,172 +971,37 @@ Be concise and practical. No preamble.`
   // ─── SWAP MEAL ───────────────────────────────────────────────────
   async function swapMeal() {
     const meal = currentPlan[currentMealIndex];
-
     document.getElementById('recipeBody').innerHTML = '';
     document.getElementById('recipeActions').style.display = 'none';
     document.getElementById('recipeLoading').style.display = 'flex';
     document.getElementById('recipeTitle').textContent = 'Finding an alternative…';
-    document.getElementById('recipeDayLabel').textContent = meal.day;
 
     try {
       const otherMeals = currentPlan
         .filter((m, i) => i !== currentMealIndex && m.type === 'cook')
         .map(m => m.name).join(', ');
 
-      // Step 1: get a new meal name
       const suggestion = await callClaude([{
         role: 'user',
         content: `Suggest a different ${meal.cuisine} pescatarian meal for ${meal.day} night to replace "${meal.name}".
-Constraints: pantry-first, 30 min or less, serves 2, pescatarian (vegetarian is fine too).
-Already on this week's plan — do not repeat these: ${otherMeals || 'none'}.
+Constraints: pantry-first, 30 min or less, serves 2.
+Do not repeat: ${otherMeals || 'none'}.
 Return ONLY a JSON object, no markdown:
-{"name": "Meal Name", "cuisine": "${meal.cuisine}", "isVegetarian": false, "keyIngredients": "ingredient1, ingredient2, ingredient3"}`
+{"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian":false,"keyIngredients":"ing1, ing2, ing3"}`
       }], 400);
 
-      const clean = suggestion.replace(/```json|```/g, '').trim();
-      const newMeal = JSON.parse(clean);
-      newMeal.day = meal.day;
-      newMeal.type = 'cook';
-      newMeal.leftoverOf = null;
-
-      // Update plan state
+      const newMeal = JSON.parse(suggestion.replace(/```json|```/g, '').trim());
+      newMeal.day = meal.day; newMeal.type = 'cook'; newMeal.leftoverOf = null;
       currentPlan[currentMealIndex] = newMeal;
 
-      // Update UI header immediately
       document.getElementById('recipeTitle').textContent = newMeal.name;
       document.getElementById('recipeDayLabel').textContent = `${newMeal.day} · ${newMeal.cuisine}`;
 
-      // Step 2: fetch the recipe for the new meal
       const recipe = await callClaude([{
         role: 'user',
         content: `Give me the full recipe for "${newMeal.name}" (${newMeal.cuisine}, pescatarian, serves 2, 30 min or less).
 
-Include:
 ## Ingredients
 (bullet list)
 
 ## Steps
-(numbered list)
-
-## Leftover Idea
-(one sentence on how to repurpose this as tomorrow's meal)
-
-Be concise and practical. No preamble.`
-      }]);
-
-      document.getElementById('recipeLoading').style.display = 'none';
-      document.getElementById('recipeBody').innerHTML = formatText(recipe);
-      document.getElementById('recipeActions').style.display = 'flex';
-
-    } catch (err) {
-      document.getElementById('recipeLoading').style.display = 'none';
-      document.getElementById('recipeBody').innerHTML =
-        `<div class="error-msg">⚠️ ${err.message}</div>`;
-    }
-  }
-
-  // ─── GROCERY LIST ────────────────────────────────────────────────
-  async function getGroceryList() {
-    showView('home');
-    if (!currentPlan) {
-      sendRequest('grocery');
-      return;
-    }
-    const planSummary = currentPlan
-      .filter(m => m.type === 'cook')
-      .map(m => `${m.day}: ${m.name}`).join(', ');
-    sendRequest('custom',
-      `Generate a grocery list for this week's meals: ${planSummary}. Cross-reference the pantry and staples — only list what we actually need to buy. Show each item with an estimated price and a total at the end.`
-    );
-  }
-
-  // ─── GENERAL REQUESTS ────────────────────────────────────────────
-  const PRESETS = {
-    grocery: "Generate a grocery list for this week. Cross-reference the pantry and staples first. Show each item with estimated price and a total.",
-    pantry:  "What's currently in the pantry? Flag anything that should be used soon based on when it was added.",
-    surprise:"Suggest one creative meal I can make mostly from what's already on hand. Give me the full recipe."
-  };
-
-  async function sendRequest(type, customMessage = null) {
-    const message = customMessage || PRESETS[type];
-    const titles = {
-      grocery: '🛒 Grocery List',
-      pantry:  '🧺 Pantry Check',
-      surprise:'✨ Meal Idea',
-      custom:  '💬 Response'
-    };
-    showLoading(titles[type] || titles.custom);
-    try {
-      const text = await callClaude([{ role: 'user', content: message }]);
-      showResponse(titles[type] || titles.custom, text);
-    } catch (err) {
-      showError(err.message);
-    }
-  }
-
-  function sendCustom() {
-    const input = document.getElementById('customInput');
-    const msg = input.value.trim();
-    if (!msg) return;
-    sendRequest('custom', msg);
-    input.value = '';
-  }
-
-  document.getElementById('customInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendCustom(); }
-  });
-
-  // ─── UI HELPERS ──────────────────────────────────────────────────
-  function showLoading(title) {
-    const card = document.getElementById('responseCard');
-    document.getElementById('responseTitle').textContent = title;
-    document.getElementById('responseBody').innerHTML = `
-      <div class="loading">
-        <div class="loading-dots"><span></span><span></span><span></span></div>
-        Thinking…
-      </div>`;
-    card.classList.add('visible');
-    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  function showResponse(title, text) {
-    document.getElementById('responseTitle').textContent = title;
-    document.getElementById('responseBody').innerHTML = formatText(text);
-  }
-
-  function showError(msg) {
-    document.getElementById('responseBody').innerHTML =
-      `<div class="error-msg">⚠️ ${msg}<br><small>Check your connection and try again.</small></div>`;
-  }
-
-  function clearResponse() {
-    document.getElementById('responseCard').classList.remove('visible');
-  }
-
-  function copyResponse() {
-    navigator.clipboard.writeText(document.getElementById('responseBody').innerText).then(() => {
-      const btn = event.target;
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy', 1500);
-    });
-  }
-
-  function formatText(text) {
-    return text
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/^#{1,3} (.+)$/gm, '<h3>$1</h3>')
-      .replace(/^\| (.+)$/gm, match => {
-        if (match.includes('---')) return '';
-        const cells = match.split('|').filter(c => c.trim());
-        return '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
-      })
-      .replace(/(<tr>[\s\S]*?<\/tr>\n?)+/g, t => `<table>${t}</table>`)
-      .replace(/^- (.+)$/gm, '<li>$1</li>')
-      .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
-      .replace(/(<li>.*<\/li>\n?)+/g, l => `<ul>${l}</ul>`)
-      .replace(/\n\n/g, '</p><p>')
-      .trim();
-  }
-</script>
-</body>
-</html>
