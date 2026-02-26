@@ -289,6 +289,8 @@
   }
   .recipe-action-btn.schedule { background: var(--green); color: white; }
   .recipe-action-btn.schedule:hover { background: #2D5038; }
+  .recipe-action-btn.unschedule { background: #FEF2F2; color: #991B1B; border: 1.5px solid #FECACA; }
+  .recipe-action-btn.unschedule:hover { background: #FEE2E2; border-color: #EF4444; }
   .recipe-action-btn.swap { background: var(--cream); color: var(--ink); border: 1.5px solid var(--border); }
   .recipe-action-btn.swap:hover { border-color: var(--accent); background: white; }
   .recipe-action-btn.keep { background: var(--ink); color: white; }
@@ -481,7 +483,7 @@
     </div>
     <div class="recipe-body" id="recipeBody"></div>
     <div class="recipe-detail-actions" id="recipeActions" style="display:none">
-      <button class="recipe-action-btn schedule" id="scheduleBtn" onclick="openScheduleModal()">
+      <button class="recipe-action-btn schedule" id="scheduleBtn" onclick="handleScheduleBtn()">
         📅 Schedule this meal
       </button>
       <button class="recipe-action-btn swap" onclick="swapMeal()">
@@ -924,9 +926,18 @@ Return ONLY a valid JSON array of 2 objects. No markdown, no explanation.
     document.getElementById('recipeActions').style.display = 'none';
     document.getElementById('recipeLoading').style.display = 'flex';
 
-    // Hide schedule button if already scheduled
+    // Update schedule button based on scheduled state
     const schedBtn = document.getElementById('scheduleBtn');
-    schedBtn.style.display = isScheduled ? 'none' : 'flex';
+    schedBtn.style.display = 'flex';
+    if (isScheduled) {
+      schedBtn.innerHTML = '🗑 Unschedule this meal';
+      schedBtn.classList.remove('schedule');
+      schedBtn.classList.add('unschedule');
+    } else {
+      schedBtn.innerHTML = '📅 Schedule this meal';
+      schedBtn.classList.remove('unschedule');
+      schedBtn.classList.add('schedule');
+    }
 
     try {
       let recipePrompt;
@@ -1016,7 +1027,12 @@ No preamble.`
       document.getElementById('recipeLoading').style.display = 'none';
       document.getElementById('recipeBody').innerHTML = formatText(recipe);
       document.getElementById('recipeActions').style.display = 'flex';
-      document.getElementById('scheduleBtn').style.display = 'flex';
+      const schedBtn = document.getElementById('scheduleBtn');
+      schedBtn.style.display = 'flex';
+      schedBtn.innerHTML = '📅 Schedule this meal';
+      schedBtn.classList.remove('unschedule');
+      schedBtn.classList.add('schedule');
+      schedBtn.disabled = false;
 
     } catch (err) {
       document.getElementById('recipeLoading').style.display = 'none';
@@ -1026,6 +1042,52 @@ No preamble.`
   }
 
   // ─── SCHEDULE MODAL ──────────────────────────────────────────────
+  function handleScheduleBtn() {
+    const meal = currentPlan[currentMealIndex];
+    if (meal.isScheduled) {
+      unscheduleMeal();
+    } else {
+      openScheduleModal();
+    }
+  }
+
+  async function unscheduleMeal() {
+    const meal = currentPlan[currentMealIndex];
+    const weekStr = weekKey(currentWeekMonday);
+    const weekAndDay = weekStr + '|' + meal.day;
+
+    const schedBtn = document.getElementById('scheduleBtn');
+    schedBtn.disabled = true;
+    schedBtn.innerHTML = '⏳ Removing…';
+
+    const success = await deleteRowInSheet('Schedule', 'week_day', weekAndDay);
+
+    if (success) {
+      // Restore meal to unscheduled state in local plan
+      meal.isScheduled = false;
+      meal.status = null;
+      currentPlan[currentMealIndex] = meal;
+
+      // Invalidate system prompt cache so ingredients are freed up
+      cachedSystemPrompt = null;
+
+      // Update button back to Schedule
+      schedBtn.disabled = false;
+      schedBtn.innerHTML = '📅 Schedule this meal';
+      schedBtn.classList.remove('unschedule');
+      schedBtn.classList.add('schedule');
+
+      // Re-render plan cards in background so badge is gone when they go back
+      renderPlanCards();
+
+      showToast('✓ Unscheduled — meal is back in the pool');
+    } else {
+      schedBtn.disabled = false;
+      schedBtn.innerHTML = '🗑 Unschedule this meal';
+      showToast('⚠️ Could not unschedule — try again.');
+    }
+  }
+
   function openScheduleModal() {
     const meal = currentPlan[currentMealIndex];
     document.getElementById('scheduleModalSubtitle').textContent =
@@ -1067,8 +1129,11 @@ No preamble.`
       meal.status = 'scheduled';
       currentPlan[currentMealIndex] = meal;
 
-      // Hide schedule button
-      document.getElementById('scheduleBtn').style.display = 'none';
+      // Update button to Unschedule
+      const schedBtn = document.getElementById('scheduleBtn');
+      schedBtn.innerHTML = '🗑 Unschedule this meal';
+      schedBtn.classList.remove('schedule');
+      schedBtn.classList.add('unschedule');
 
       // Show confirmation
       const body = document.getElementById('recipeBody');
@@ -1128,7 +1193,6 @@ No preamble.`
     const updates = { 7: 'made' };
     if (rating) updates[8] = rating;
     if (notes) updates[12] = notes;
-    console.log('confirmMade sending:', { weekAndDay, updates, notes, rating });
     const success = await updateRowInSheet('Schedule', 'week_day', weekAndDay, updates);
 
     const ratingEmoji = rating === 'thumbs_up' ? ' · 👍' : rating === 'thumbs_down' ? ' · 👎' : '';
@@ -1176,6 +1240,21 @@ No preamble.`
       return data.ok === true;
     } catch (err) {
       console.error('Sheet update failed:', err);
+      return false;
+    }
+  }
+
+  async function deleteRowInSheet(tabName, matchCol, matchVal) {
+    try {
+      const res = await fetch(PROXY_URL + '/sheet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'deleteRow', tab: tabName, matchCol, matchVal })
+      });
+      const data = await res.json();
+      return data.ok === true;
+    } catch (err) {
+      console.error('Sheet delete failed:', err);
       return false;
     }
   }
