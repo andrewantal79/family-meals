@@ -17,8 +17,6 @@
     --green-light: #D1FAE5;
     --border: #E5DDD5;
     --card: #FFFFFF;
-    --scheduled-bg: #F0FDF4;
-    --scheduled-border: #86EFAC;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -79,7 +77,6 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Action buttons */
   .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
   .action-btn {
     background: var(--card); border: 1.5px solid var(--border);
@@ -97,7 +94,6 @@
   .action-btn.primary .btn-label { color: var(--warm-white); }
   .action-btn.primary .btn-desc { color: rgba(255,255,255,0.5); }
 
-  /* Custom input */
   .custom-input-section {
     background: var(--card); border: 1.5px solid var(--border);
     border-radius: 16px; padding: 16px; margin-bottom: 24px;
@@ -125,7 +121,6 @@
   .send-btn:hover { background: #9a3412; }
   .send-btn:active { transform: scale(0.95); }
 
-  /* Response card */
   .response-card {
     background: var(--card); border: 1.5px solid var(--border);
     border-radius: 16px; overflow: hidden; display: none;
@@ -148,7 +143,7 @@
     color: var(--ink); max-height: 60vh; overflow-y: auto;
   }
 
-  /* ── WEEK SELECTOR ──────────────────────────────────── */
+  /* Week selector */
   .week-selector {
     display: flex; align-items: center; justify-content: space-between;
     background: var(--card); border: 1.5px solid var(--border);
@@ -156,18 +151,14 @@
   }
   .week-nav-btn {
     background: none; border: none; font-size: 20px; cursor: pointer;
-    color: var(--muted); padding: 4px 8px; border-radius: 8px;
-    transition: all 0.2s; line-height: 1;
+    color: var(--muted); padding: 4px 8px; border-radius: 8px; transition: all 0.2s; line-height: 1;
   }
   .week-nav-btn:hover { background: var(--cream); color: var(--ink); }
   .week-label-wrap { text-align: center; }
-  .week-label {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px; font-weight: 600; color: var(--ink);
-  }
+  .week-label { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; color: var(--ink); }
   .week-sublabel { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-  /* ── MEAL PLAN VIEW ─────────────────────────────────── */
+  /* Plan view */
   .plan-header {
     display: flex; align-items: flex-start;
     justify-content: space-between; margin-bottom: 16px;
@@ -179,16 +170,12 @@
     background: var(--card); border: 1.5px solid var(--border);
     border-radius: 14px; margin-bottom: 12px; overflow: hidden;
     transition: border-color 0.2s, box-shadow 0.2s;
-    cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
-  .meal-card:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(194,65,12,0.08); }
-  .meal-card:active { transform: scale(0.99); }
-  .meal-card.is-scheduled {
-    background: var(--scheduled-bg);
-    border-color: var(--scheduled-border);
-    cursor: default;
-  }
-  .meal-card.is-scheduled:hover { border-color: var(--scheduled-border); box-shadow: none; }
+  .meal-card.clickable { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .meal-card.clickable:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(194,65,12,0.08); }
+  .meal-card.clickable:active { transform: scale(0.99); }
+  .meal-card.is-scheduled { background: #F0FDF4; border-color: #86EFAC; }
+  .meal-card.is-scheduled:hover { border-color: #86EFAC; box-shadow: none; }
 
   .meal-card-inner { padding: 16px; display: flex; align-items: flex-start; gap: 14px; }
   .meal-day {
@@ -202,39 +189,26 @@
     font-size: 16px; font-weight: 600; color: var(--ink);
     line-height: 1.3; margin-bottom: 4px;
   }
-  .meal-key-ingredients {
-    font-size: 12px; color: var(--muted); line-height: 1.4;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
+  .meal-key-ingredients { font-size: 12px; color: var(--muted); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .meal-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
-  .meal-tag {
-    font-size: 10px; font-weight: 500; padding: 2px 8px;
-    border-radius: 20px; background: var(--cream);
-    color: var(--muted); border: 1px solid var(--border);
-  }
+  .meal-tag { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; background: var(--cream); color: var(--muted); border: 1px solid var(--border); }
   .meal-tag.fish { background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; }
   .meal-tag.veggie { background: var(--green-light); color: var(--green); border-color: #A7F3D0; }
   .meal-tag.scheduled-tag { background: #DCFCE7; color: #15803D; border-color: #86EFAC; }
   .meal-tag.url-tag { background: #F3E8FF; color: #7E22CE; border-color: #D8B4FE; }
-
   .meal-arrow { color: var(--muted); font-size: 18px; margin-top: 1px; flex-shrink: 0; transition: transform 0.2s, color 0.2s; }
-  .meal-card:not(.is-scheduled):hover .meal-arrow { transform: translateX(3px); color: var(--accent); }
+  .meal-card.clickable:hover .meal-arrow { transform: translateX(3px); color: var(--accent); }
 
-  /* Scheduled meal actions inline */
-  .scheduled-actions {
-    border-top: 1px solid var(--scheduled-border);
-    padding: 10px 16px;
-    display: flex; gap: 8px;
-  }
+  .scheduled-actions { border-top: 1px solid #86EFAC; padding: 10px 16px; display: flex; gap: 8px; }
   .sched-btn {
     flex: 1; padding: 8px 10px; border-radius: 8px; border: none;
     font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
     cursor: pointer; transition: all 0.2s; -webkit-tap-highlight-color: transparent;
   }
   .sched-btn.view { background: white; color: var(--ink); border: 1px solid var(--border); }
+  .sched-btn.view:hover { border-color: var(--accent); }
   .sched-btn.made { background: var(--green); color: white; }
   .sched-btn.made:hover { background: #2D5038; }
-  .sched-btn.view:hover { border-color: var(--accent); }
 
   .leftover-card {
     background: #FFFBEB; border: 1.5px solid #FDE68A;
@@ -257,7 +231,7 @@
   .plan-cta.secondary { background: var(--card); color: var(--ink); border: 1.5px solid var(--border); }
   .plan-cta.secondary:hover { border-color: var(--accent); }
 
-  /* ── RECIPE DETAIL VIEW ─────────────────────────────── */
+  /* Recipe view */
   .back-btn {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 13px; font-weight: 500; color: var(--muted);
@@ -276,10 +250,7 @@
   .recipe-body li { margin-bottom: 6px; }
   .recipe-body strong { font-weight: 500; color: var(--accent); }
 
-  .recipe-detail-actions {
-    display: flex; flex-direction: column; gap: 10px;
-    margin-top: 28px; padding-top: 20px; border-top: 1.5px solid var(--border);
-  }
+  .recipe-detail-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; padding-top: 20px; border-top: 1.5px solid var(--border); }
   .recipe-action-btn {
     width: 100%; padding: 15px; border-radius: 12px; border: none;
     cursor: pointer; font-family: 'DM Sans', sans-serif;
@@ -297,31 +268,22 @@
   .recipe-action-btn.keep:hover { background: #374151; }
   .recipe-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* ── SCHEDULE CONFIRM / MADE / RATING MODALS ────────── */
+  /* Modals */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-    display: flex; align-items: flex-end; justify-content: center;
-    z-index: 100; animation: fadeIn 0.2s ease;
-    display: none;
+    display: none; align-items: flex-end; justify-content: center;
+    z-index: 100;
   }
-  .modal-overlay.open { display: flex; }
+  .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
   .modal {
     background: var(--card); border-radius: 20px 20px 0 0;
     padding: 24px 24px 36px; width: 100%; max-width: 480px;
     animation: slideModal 0.3s ease;
   }
-  @keyframes slideModal {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-  }
-  .modal-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px; font-weight: 600; margin-bottom: 6px;
-  }
+  @keyframes slideModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; margin-bottom: 6px; }
   .modal-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
-
   .modal-field { margin-bottom: 16px; }
   .modal-label { font-size: 11px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; display: block; }
   .modal-input {
@@ -337,7 +299,6 @@
     font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
     outline: none; cursor: pointer; appearance: none;
   }
-
   .modal-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
   .modal-btn {
     width: 100%; padding: 15px; border-radius: 12px; border: none;
@@ -351,16 +312,14 @@
   .modal-btn.green { background: var(--green); color: white; }
   .modal-btn.green:hover { background: #2D5038; }
 
-  /* Rating buttons */
   .rating-row { display: flex; gap: 12px; }
   .rating-btn {
     flex: 1; padding: 16px; border-radius: 12px; border: 2px solid var(--border);
     font-size: 28px; cursor: pointer; transition: all 0.2s; background: var(--cream);
     -webkit-tap-highlight-color: transparent;
   }
-  .rating-btn:hover { transform: scale(1.05); }
-  .rating-btn.thumbs-up:hover, .rating-btn.thumbs-up.selected { border-color: var(--green); background: var(--green-light); }
-  .rating-btn.thumbs-down:hover, .rating-btn.thumbs-down.selected { border-color: #EF4444; background: #FEF2F2; }
+  .rating-btn.thumbs-up.selected { border-color: var(--green); background: var(--green-light); }
+  .rating-btn.thumbs-down.selected { border-color: #EF4444; background: #FEF2F2; }
 
   /* Loading */
   .loading { display: flex; align-items: center; gap: 10px; padding: 24px 0; color: var(--muted); font-size: 13px; font-style: italic; }
@@ -373,7 +332,6 @@
     30% { transform: translateY(-6px); opacity: 1; }
   }
 
-  /* Error / success */
   .error-msg { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #991B1B; }
   .success-msg { background: var(--green-light); border: 1px solid #86EFAC; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--green); margin-bottom: 12px; }
 
@@ -381,7 +339,6 @@
 
   footer { text-align: center; padding: 20px; font-size: 11px; color: var(--muted); }
 
-  /* Shared text styles */
   .response-body h3, .recipe-body h3 { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; margin: 16px 0 8px; }
   .response-body table, .recipe-body table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
   .response-body th, .recipe-body th { background: var(--cream); padding: 8px 10px; text-align: left; font-weight: 500; font-size: 11px; border-bottom: 2px solid var(--border); }
@@ -402,7 +359,7 @@
 
 <main>
 
-  <!-- ── HOME VIEW ──────────────────────────────────────── -->
+  <!-- HOME -->
   <div class="view active" id="view-home">
     <div class="pantry-badge"><span>🥦</span> Pantry-first planning</div>
     <div class="actions">
@@ -442,14 +399,12 @@
     </div>
   </div>
 
-  <!-- ── MEAL PLAN VIEW ─────────────────────────────────── -->
+  <!-- PLAN -->
   <div class="view" id="view-plan">
     <div class="plan-header">
-      <div><div class="plan-title">Meal Plan</div><div class="plan-subtitle" id="planSubtitle">Tap a meal to see the recipe</div></div>
+      <div><div class="plan-title">Meal Plan</div><div class="plan-subtitle">Tap a meal to see the recipe</div></div>
       <button class="back-btn" onclick="showView('home')">← Home</button>
     </div>
-
-    <!-- Week selector -->
     <div class="week-selector">
       <button class="week-nav-btn" onclick="changeWeek(-1)">‹</button>
       <div class="week-label-wrap">
@@ -458,21 +413,18 @@
       </div>
       <button class="week-nav-btn" onclick="changeWeek(1)">›</button>
     </div>
-
     <div id="planLoading" class="loading" style="display:none">
       <div class="loading-dots"><span></span><span></span><span></span></div>
       Planning your week…
     </div>
-
     <div id="planCards"></div>
-
     <div class="plan-actions" id="planActions" style="display:none">
       <button class="plan-cta secondary" onclick="planWeek()">↺ Regenerate</button>
       <button class="plan-cta primary" onclick="getGroceryList()">🛒 Grocery List</button>
     </div>
   </div>
 
-  <!-- ── RECIPE DETAIL VIEW ─────────────────────────────── -->
+  <!-- RECIPE -->
   <div class="view" id="view-recipe">
     <button class="back-btn" onclick="showView('plan')">← Back to plan</button>
     <div class="recipe-day-label" id="recipeDayLabel"></div>
@@ -483,15 +435,9 @@
     </div>
     <div class="recipe-body" id="recipeBody"></div>
     <div class="recipe-detail-actions" id="recipeActions" style="display:none">
-      <button class="recipe-action-btn schedule" id="scheduleBtn" onclick="handleScheduleBtn()">
-        📅 Schedule this meal
-      </button>
-      <button class="recipe-action-btn swap" onclick="swapMeal()">
-        🔄 Find me a different meal
-      </button>
-      <button class="recipe-action-btn keep" onclick="showView('plan')">
-        ✓ Back to plan
-      </button>
+      <button class="recipe-action-btn schedule" id="scheduleBtn" onclick="handleScheduleBtn()">📅 Schedule this meal</button>
+      <button class="recipe-action-btn swap" id="swapBtn" onclick="swapMeal()">🔄 Find me a different meal</button>
+      <button class="recipe-action-btn keep" onclick="showView('plan')">✓ Back to plan</button>
     </div>
   </div>
 
@@ -499,11 +445,11 @@
 
 <footer>Antal Family Meals · Powered by Claude</footer>
 
-<!-- ── SCHEDULE MODAL ──────────────────────────────────── -->
+<!-- SCHEDULE MODAL -->
 <div class="modal-overlay" id="scheduleModal">
   <div class="modal">
     <div class="modal-title">Schedule this meal</div>
-    <div class="modal-subtitle" id="scheduleModalSubtitle">Choose which night to schedule it for.</div>
+    <div class="modal-subtitle" id="scheduleModalSubtitle">Choose which night to lock this in.</div>
     <div class="modal-field">
       <label class="modal-label">Night</label>
       <select class="modal-select" id="scheduleDay">
@@ -525,12 +471,11 @@
   </div>
 </div>
 
-<!-- ── MARK AS MADE MODAL ─────────────────────────────── -->
+<!-- MADE MODAL -->
 <div class="modal-overlay" id="madeModal">
   <div class="modal">
     <div class="modal-title" id="madeModalTitle">You made this! 🎉</div>
     <div class="modal-subtitle">How did it go?</div>
-
     <div class="modal-field">
       <label class="modal-label">Rate this recipe</label>
       <div class="rating-row">
@@ -538,18 +483,15 @@
         <button class="rating-btn thumbs-down" id="thumbsDown" onclick="selectRating('down')">👎</button>
       </div>
     </div>
-
     <div class="modal-field">
       <label class="modal-label">Notes (optional)</label>
       <input type="text" class="modal-input" id="madeNotes" placeholder="e.g. Reduce salt next time…" maxlength="140" oninput="updateNotesCount()">
       <div style="font-size:11px; color:var(--muted); text-align:right; margin-top:4px;"><span id="notesCount">0</span>/140</div>
     </div>
-
     <div class="modal-field" style="background: var(--green-light); border-radius: 10px; padding: 12px; border: 1px solid #86EFAC;">
       <div style="font-size: 12px; color: var(--green); font-weight: 500; margin-bottom: 4px;">🧺 Pantry update</div>
       <div style="font-size: 13px; color: var(--ink);">After marking as made, remember to update your pantry in Google Sheets to remove the ingredients you used.</div>
     </div>
-
     <div class="modal-actions">
       <button class="modal-btn green" onclick="confirmMade()">✓ Mark as Made</button>
       <button class="modal-btn secondary" onclick="closeModal('madeModal')">Cancel</button>
@@ -557,29 +499,26 @@
   </div>
 </div>
 
-<script>
-  // ─── CONFIG ──────────────────────────────────────────────────────
-  const PROXY_URL = 'https://family-meals-proxy.andrew-antal79.workers.dev';
-  const SHEET_ID  = '1R432cBA83sJZ1yQgRpDjlHN-eJ40XUGiEYgYQN_UVfk';
+<script defer>
+  // CONFIG
+  const PROXY_URL        = 'https://family-meals-proxy.andrew-antal79.workers.dev';
+  const SHEET_ID         = '1R432cBA83sJZ1yQgRpDjlHN-eJ40XUGiEYgYQN_UVfk';
   const PANTRY_CSV_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
   const STAPLES_CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=774516879`;
   const SCHEDULE_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=1682925418`;
-  const RECIPES_CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=826639951`;
 
-  const SHEETS_WRITE_URL = 'https://script.google.com/macros/s/AKfycbxpUbapQf1BBroritxnuTWA41CTtqfYpJXHXwwJ1oYgZAcGTRooJpq5thp9wO02lV2uYg/exec';
-
-  // ─── STATE ───────────────────────────────────────────────────────
-  let currentPlan       = null;
-  let currentMealIndex  = null;
+  // STATE
+  let currentPlan        = null;
+  let currentMealIndex   = null;
   let cachedSystemPrompt = null;
-  let selectedRating    = null;
-  let madeModalMealKey  = null; // "weekStr|day" to identify which scheduled meal
-  let currentWeekMonday = getThisWeekMonday();
+  let selectedRating     = null;
+  let madeModalMealKey   = null;
+  let currentWeekMonday  = null;
 
-  // ─── WEEK HELPERS ────────────────────────────────────────────────
+  // WEEK HELPERS
   function getThisWeekMonday() {
     const today = new Date();
-    const day = today.getDay(); // 0=Sun, 1=Mon…
+    const day = today.getDay();
     const diff = day === 0 ? -6 : 1 - day;
     const monday = new Date(today);
     monday.setDate(today.getDate() + diff);
@@ -588,7 +527,6 @@
   }
 
   function weekKey(date) {
-    // Returns "YYYY-MM-DD" for the Monday of that week
     return date.toISOString().split('T')[0];
   }
 
@@ -609,8 +547,8 @@
   function changeWeek(delta) {
     currentWeekMonday = new Date(currentWeekMonday);
     currentWeekMonday.setDate(currentWeekMonday.getDate() + (delta * 7));
+    cachedSystemPrompt = null;
     updateWeekUI();
-    // Reset plan display for new week
     document.getElementById('planCards').innerHTML = '';
     document.getElementById('planActions').style.display = 'none';
     planWeek();
@@ -618,11 +556,11 @@
 
   function updateWeekUI() {
     document.getElementById('weekLabel').textContent = `Week of ${weekLabel(currentWeekMonday)}`;
-    const tag = isCurrentWeek(currentWeekMonday) ? 'This week' : `through ${weekEndLabel(currentWeekMonday)}`;
-    document.getElementById('weekSublabel').textContent = tag;
+    document.getElementById('weekSublabel').textContent = isCurrentWeek(currentWeekMonday)
+      ? 'This week' : `through ${weekEndLabel(currentWeekMonday)}`;
   }
 
-  // ─── PANTRY / SHEET FETCH ────────────────────────────────────────
+  // PANTRY FETCH
   async function fetchCSV(url) {
     try {
       const res = await fetch(url, { redirect: 'follow' });
@@ -650,37 +588,29 @@
     ).join('\n');
   }
 
-  // Parse schedule CSV and return meals scheduled for a given week
   function getScheduledMeals(scheduleRows, weekStr) {
     if (!scheduleRows || scheduleRows.length < 2) return [];
-    const headers = scheduleRows[0];
-    const weekIdx    = headers.indexOf('Week');
-    const dayIdx     = headers.indexOf('Day');
-    const nameIdx    = headers.indexOf('Meal Name');
-    const cuisineIdx = headers.indexOf('Cuisine');
-    const vegIdx     = headers.indexOf('Is Vegetarian');
-    const ingIdx     = headers.indexOf('Key Ingredients');
-    const statusIdx  = headers.indexOf('Status');
-    const urlIdx     = headers.indexOf('Recipe URL');
+    const h = scheduleRows[0];
+    const idx = (name) => h.indexOf(name);
 
     return scheduleRows.slice(1)
-      .filter(row => row[weekIdx] === weekStr)
+      .filter(row => row[idx('Week')] === weekStr)
       .map(row => ({
-        week:          row[weekIdx],
-        day:           row[dayIdx],
-        name:          row[nameIdx],
-        cuisine:       row[cuisineIdx],
-        isVegetarian:  row[vegIdx] === 'true' || row[vegIdx] === 'TRUE',
-        keyIngredients:row[ingIdx],
-        status:        row[statusIdx] || 'scheduled',
-        type:          'cook',
-        isScheduled:   true,
-        recipeUrl:     row[urlIdx] || null
+        week:           row[idx('Week')],
+        day:            row[idx('Day')],
+        name:           row[idx('Meal Name')],
+        cuisine:        row[idx('Cuisine')],
+        isVegetarian:   row[idx('Is Vegetarian')] === 'true' || row[idx('Is Vegetarian')] === 'TRUE',
+        keyIngredients: row[idx('Key Ingredients')],
+        status:         row[idx('Status')] || 'scheduled',
+        type:           'cook',
+        isScheduled:    true,
+        recipeUrl:      row[idx('Recipe URL')] || null
       }));
   }
 
-  async function buildSystemPrompt(forceRefresh = false) {
-    if (cachedSystemPrompt && !forceRefresh) return cachedSystemPrompt;
+  async function buildSystemPrompt() {
+    if (cachedSystemPrompt) return cachedSystemPrompt;
 
     const [pantryCSV, staplesCSV, scheduleCSV] = await Promise.all([
       fetchCSV(PANTRY_CSV_URL),
@@ -691,35 +621,32 @@
     const pantryText  = csvToReadable(parseCSV(pantryCSV),  'ACTIVE PANTRY (Sheet1)');
     const staplesText = csvToReadable(parseCSV(staplesCSV), 'STAPLES (always assumed on hand)');
 
-    // Get scheduled meals for current week
     const weekStr = weekKey(currentWeekMonday);
-    const scheduleRows = parseCSV(scheduleCSV);
-    const scheduled = getScheduledMeals(scheduleRows, weekStr);
+    const scheduled = getScheduledMeals(parseCSV(scheduleCSV), weekStr);
 
-    let scheduledText = 'SCHEDULED MEALS THIS WEEK: none';
-    if (scheduled.length > 0) {
-      scheduledText = `SCHEDULED MEALS THIS WEEK (already committed — treat their ingredients as unavailable for other meals):\n` +
-        scheduled.map(m => `- ${m.day}: ${m.name} (${m.cuisine}) — uses: ${m.keyIngredients}`).join('\n');
-    }
+    const scheduledText = scheduled.length
+      ? `SCHEDULED MEALS THIS WEEK (treat their ingredients as unavailable for other meals):\n` +
+        scheduled.map(m => `- ${m.day}: ${m.name} (${m.cuisine}) — uses: ${m.keyIngredients}`).join('\n')
+      : 'SCHEDULED MEALS THIS WEEK: none';
 
     cachedSystemPrompt = `You are a meal planning assistant for the Antal household in Oak Park, IL (ZIP 60302).
 
 HOUSEHOLD PROFILE:
-- 2 adults, pescatarian (fish & shellfish fine, no meat). Vegetarian meals are equally valid.
+- 2 adults, pescatarian (fish & shellfish fine, no meat). Vegetarian meals equally valid.
 - Cuisines: Mediterranean, Asian, Mexican
 - Budget: under $150/week groceries
 - Prep time: 30 min or less
-- Structure: 3 cook nights + 2 leftover nights (leftovers repurposed creatively, not repeated)
-- Planning priority: pantry-first. Use what's on hand before deciding what to buy.
+- Structure: 3 cook nights + 2 leftover nights (leftovers repurposed creatively)
+- Planning priority: pantry-first.
 
 BEHAVIOR:
 - Never ask for preferences — they are defined above
 - For meal plans: return structured JSON only (no markdown, no explanation)
-- For grocery lists: cross-reference pantry + staples + scheduled meal ingredients, show item + estimated price, show total
+- For grocery lists: cross-reference pantry + staples, show item + estimated price, show total
 - For recipes: scale for 2, include ingredients, numbered steps, leftover repurposing note
 - Use Oak Park IL prices for estimates
 
---- LIVE PANTRY DATA (fetched now) ---
+--- LIVE PANTRY DATA ---
 ${pantryText}
 
 ${staplesText}
@@ -734,18 +661,13 @@ Do NOT suggest meals that use ingredients already committed to scheduled meals.`
     return cachedSystemPrompt;
   }
 
-  // ─── CLAUDE CALL ─────────────────────────────────────────────────
+  // CLAUDE CALL
   async function callClaude(messages, maxTokens = 2000) {
-    const systemPrompt = await buildSystemPrompt();
+    const system = await buildSystemPrompt();
     const res = await fetch(PROXY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: maxTokens,
-        system: systemPrompt,
-        messages
-      })
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: maxTokens, system, messages })
     });
     if (!res.ok) {
       const err = await res.json();
@@ -755,83 +677,80 @@ Do NOT suggest meals that use ingredients already committed to scheduled meals.`
     return data.content?.[0]?.text || '';
   }
 
-  // ─── VIEW NAV ────────────────────────────────────────────────────
+  // SHEET WRITE
+  async function sheetWrite(payload) {
+    try {
+      const res = await fetch(PROXY_URL + '/sheet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      return data.ok === true;
+    } catch (err) {
+      console.error('Sheet write failed:', err);
+      return false;
+    }
+  }
+
+  // VIEW NAV
   function showView(name) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById(`view-${name}`).classList.add('active');
+    document.getElementById('view-' + name).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function goToPlan() {
+    if (!currentWeekMonday) currentWeekMonday = getThisWeekMonday();
     showView('plan');
     updateWeekUI();
     if (!currentPlan) planWeek();
   }
 
-  // ─── PLAN WEEK ───────────────────────────────────────────────────
+  // PLAN WEEK
   async function planWeek() {
     cachedSystemPrompt = null;
     document.getElementById('planLoading').style.display = 'flex';
     document.getElementById('planCards').innerHTML = '';
     document.getElementById('planActions').style.display = 'none';
 
-    // First, load any already-scheduled meals for this week
     const weekStr = weekKey(currentWeekMonday);
     const scheduleCSV = await fetchCSV(SCHEDULE_CSV_URL);
-    const scheduleRows = parseCSV(scheduleCSV);
-    const alreadyScheduled = getScheduledMeals(scheduleRows, weekStr);
+    const alreadyScheduled = getScheduledMeals(parseCSV(scheduleCSV), weekStr);
     const scheduledDays = alreadyScheduled.map(m => m.day);
+    const cookNightsNeeded = Math.max(0, 3 - alreadyScheduled.length);
 
     try {
-      // How many cook nights do we still need to fill?
-      const cookNightsNeeded = Math.max(0, 3 - alreadyScheduled.length);
-      const leftoverNightsNeeded = 2;
-      const totalNeeded = cookNightsNeeded + leftoverNightsNeeded;
-
       let newMeals = [];
 
       if (cookNightsNeeded > 0) {
-        const daysToAvoid = scheduledDays.length > 0
-          ? `Do not assign meals to these days (already scheduled): ${scheduledDays.join(', ')}.` : '';
+        const avoidDays = scheduledDays.length
+          ? `Do not assign meals to: ${scheduledDays.join(', ')}.` : '';
 
-        const raw = await callClaude([{
-          role: 'user',
-          content: `Plan meals for the week of ${weekLabel(currentWeekMonday)}.
-${daysToAvoid}
-I need ${cookNightsNeeded} more cook night(s) and ${leftoverNightsNeeded} leftover night(s).
-Return ONLY a valid JSON array with exactly ${totalNeeded} objects. No markdown, no explanation.
+        const raw = await callClaude([{ role: 'user', content:
+          `Plan meals for the week of ${weekLabel(currentWeekMonday)}.
+${avoidDays}
+I need ${cookNightsNeeded} cook night(s) and 2 leftover nights.
+Return ONLY a valid JSON array with exactly ${cookNightsNeeded + 2} objects. No markdown, no explanation.
+Cook night shape: {"day":"Tuesday","type":"cook","name":"Meal Name","cuisine":"Mexican","isVegetarian":false,"keyIngredients":"ing1, ing2, ing3","leftoverOf":null}
+Leftover night shape: {"day":"Wednesday","type":"leftover","name":"Repurposed version","cuisine":"Mexican","isVegetarian":false,"keyIngredients":"","leftoverOf":"Original Meal Name"}
+Return the JSON array only.` }]);
 
-Each cook night object:
-{"day":"Tuesday","type":"cook","name":"Meal Name","cuisine":"Mexican","isVegetarian":false,"keyIngredients":"ing1, ing2, ing3","leftoverOf":null}
-
-Each leftover night object:
-{"day":"Wednesday","type":"leftover","name":"Repurposed version name","cuisine":"Mexican","isVegetarian":false,"keyIngredients":"","leftoverOf":"Original Meal Name"}
-
-Return the JSON array only.`
-        }]);
-
-        const clean = raw.replace(/```json|```/g, '').trim();
-        newMeals = JSON.parse(clean);
+        newMeals = JSON.parse(raw.replace(/```json|```/g, '').trim());
       } else {
-        // All cook nights scheduled — just need leftover suggestions
-        const raw = await callClaude([{
-          role: 'user',
-          content: `All cook nights for week of ${weekLabel(currentWeekMonday)} are already scheduled: ${alreadyScheduled.map(m => `${m.day}: ${m.name}`).join(', ')}.
-Suggest 2 leftover nights that repurpose those meals creatively.
-Return ONLY a valid JSON array of 2 objects. No markdown, no explanation.
-{"day":"Wednesday","type":"leftover","name":"Repurposed version name","cuisine":"Mexican","isVegetarian":false,"keyIngredients":"","leftoverOf":"Original Meal Name"}`
-        }]);
-        const clean = raw.replace(/```json|```/g, '').trim();
-        newMeals = JSON.parse(clean);
+        const raw = await callClaude([{ role: 'user', content:
+          `All cook nights for week of ${weekLabel(currentWeekMonday)} are scheduled: ${alreadyScheduled.map(m => m.day + ': ' + m.name).join(', ')}.
+Suggest 2 leftover nights repurposing those meals.
+Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","name":"Repurposed version","cuisine":"Mexican","isVegetarian":false,"keyIngredients":"","leftoverOf":"Original Meal Name"}` }]);
+
+        newMeals = JSON.parse(raw.replace(/```json|```/g, '').trim());
       }
 
-      // Merge: scheduled meals + new AI meals, sort by day order
       const dayOrder = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
       currentPlan = [...alreadyScheduled, ...newMeals]
         .sort((a, b) => dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day));
 
       renderPlanCards();
-
     } catch (err) {
       document.getElementById('planLoading').style.display = 'none';
       document.getElementById('planCards').innerHTML =
@@ -839,6 +758,7 @@ Return ONLY a valid JSON array of 2 objects. No markdown, no explanation.
     }
   }
 
+  // RENDER PLAN CARDS — uses DOM creation + event delegation, no inline onclick
   function renderPlanCards() {
     document.getElementById('planLoading').style.display = 'none';
     const container = document.getElementById('planCards');
@@ -849,68 +769,70 @@ Return ONLY a valid JSON array of 2 objects. No markdown, no explanation.
 
       if (meal.type === 'leftover') {
         el.className = 'leftover-card';
-        el.innerHTML = `
-          <div class="leftover-icon">♻️</div>
-          <div>
-            <div class="leftover-label">${meal.day} · Leftovers</div>
-            <div class="leftover-name">${meal.name}</div>
-          </div>`;
+        el.innerHTML =
+          '<div class="leftover-icon">♻️</div>' +
+          '<div>' +
+            '<div class="leftover-label">' + meal.day + ' · Leftovers</div>' +
+            '<div class="leftover-name">' + meal.name + '</div>' +
+          '</div>';
 
       } else if (meal.isScheduled) {
         const isMade = meal.status === 'made';
         const typeTag = meal.isVegetarian
-          ? `<span class="meal-tag veggie">🌿 Vegetarian</span>`
-          : `<span class="meal-tag fish">🐟 Fish</span>`;
-        const urlTag = meal.recipeUrl ? `<span class="meal-tag url-tag">🔗 External recipe</span>` : '';
+          ? '<span class="meal-tag veggie">🌿 Vegetarian</span>'
+          : '<span class="meal-tag fish">🐟 Fish</span>';
+        const urlTag = meal.recipeUrl
+          ? '<span class="meal-tag url-tag">🔗 External recipe</span>' : '';
 
         el.className = 'meal-card is-scheduled';
-        el.innerHTML = `
-          <div class="meal-card-inner">
-            <div class="meal-day">${meal.day}</div>
-            <div class="meal-info">
-              <div class="meal-name">${meal.name}</div>
-              <div class="meal-key-ingredients">${meal.keyIngredients || '—'}</div>
-              <div class="meal-tags">
-                ${typeTag}${urlTag}
-                <span class="meal-tag scheduled-tag">${isMade ? '✓ Made' : '📅 Scheduled'}</span>
-              </div>
-            </div>
-          </div>
-          ${!isMade ? `<div class="scheduled-actions">
-            <button class="sched-btn view" data-action="viewScheduled" data-index="${i}">View Recipe</button>
-            <button class="sched-btn made" data-action="markMade" data-index="${i}">I Made This</button>
-          </div>` : ''}`;
+        el.innerHTML =
+          '<div class="meal-card-inner">' +
+            '<div class="meal-day">' + meal.day + '</div>' +
+            '<div class="meal-info">' +
+              '<div class="meal-name">' + meal.name + '</div>' +
+              '<div class="meal-key-ingredients">' + (meal.keyIngredients || '—') + '</div>' +
+              '<div class="meal-tags">' + typeTag + urlTag +
+                '<span class="meal-tag scheduled-tag">' + (isMade ? '✓ Made' : '📅 Scheduled') + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          (!isMade
+            ? '<div class="scheduled-actions">' +
+                '<button class="sched-btn view" data-action="viewScheduled" data-index="' + i + '">View Recipe</button>' +
+                '<button class="sched-btn made" data-action="markMade" data-index="' + i + '">I Made This</button>' +
+              '</div>'
+            : '');
 
       } else {
         const typeTag = meal.isVegetarian
-          ? `<span class="meal-tag veggie">🌿 Vegetarian</span>`
-          : `<span class="meal-tag fish">🐟 Fish</span>`;
-        const cuisineTag = `<span class="meal-tag">${meal.cuisine}</span>`;
+          ? '<span class="meal-tag veggie">🌿 Vegetarian</span>'
+          : '<span class="meal-tag fish">🐟 Fish</span>';
+        const cuisineTag = '<span class="meal-tag">' + meal.cuisine + '</span>';
 
-        el.className = 'meal-card';
+        el.className = 'meal-card clickable';
         el.dataset.action = 'viewRecipe';
         el.dataset.index = i;
-        el.innerHTML = `
-          <div class="meal-card-inner">
-            <div class="meal-day">${meal.day}</div>
-            <div class="meal-info">
-              <div class="meal-name">${meal.name}</div>
-              <div class="meal-key-ingredients">${meal.keyIngredients}</div>
-              <div class="meal-tags">${typeTag}${cuisineTag}</div>
-            </div>
-            <div class="meal-arrow">›</div>
-          </div>`;
+        el.innerHTML =
+          '<div class="meal-card-inner">' +
+            '<div class="meal-day">' + meal.day + '</div>' +
+            '<div class="meal-info">' +
+              '<div class="meal-name">' + meal.name + '</div>' +
+              '<div class="meal-key-ingredients">' + meal.keyIngredients + '</div>' +
+              '<div class="meal-tags">' + typeTag + cuisineTag + '</div>' +
+            '</div>' +
+            '<div class="meal-arrow">›</div>' +
+          '</div>';
       }
 
       container.appendChild(el);
     });
 
-    // Event delegation — handles all card and button clicks safely
-    container.onclick = (e) => {
-      const btn = e.target.closest('[data-action]');
-      if (!btn) return;
-      const action = btn.dataset.action;
-      const index  = parseInt(btn.dataset.index);
+    // Single event listener handles all card interactions
+    container.onclick = function(e) {
+      const target = e.target.closest('[data-action]');
+      if (!target) return;
+      const action = target.dataset.action;
+      const index  = parseInt(target.dataset.index);
       if (action === 'viewRecipe')    viewRecipe(index);
       if (action === 'viewScheduled') viewScheduledRecipe(index);
       if (action === 'markMade') {
@@ -922,81 +844,55 @@ Return ONLY a valid JSON array of 2 objects. No markdown, no explanation.
     document.getElementById('planActions').style.display = 'flex';
   }
 
-  // ─── VIEW RECIPE ─────────────────────────────────────────────────
-  async function viewRecipe(index) {
+  // VIEW RECIPE
+  function viewRecipe(index) {
     currentMealIndex = index;
-    const meal = currentPlan[index];
-    _loadRecipeView(meal, false);
+    _loadRecipeView(currentPlan[index], false);
   }
 
-  async function viewScheduledRecipe(index) {
+  function viewScheduledRecipe(index) {
     currentMealIndex = index;
-    const meal = currentPlan[index];
-    _loadRecipeView(meal, true);
+    _loadRecipeView(currentPlan[index], true);
   }
 
   async function _loadRecipeView(meal, isScheduled) {
     showView('recipe');
-    document.getElementById('recipeDayLabel').textContent = `${meal.day} · ${meal.cuisine}`;
+    document.getElementById('recipeDayLabel').textContent = meal.day + ' · ' + meal.cuisine;
     document.getElementById('recipeTitle').textContent = meal.name;
     document.getElementById('recipeBody').innerHTML = '';
     document.getElementById('recipeActions').style.display = 'none';
     document.getElementById('recipeLoading').style.display = 'flex';
 
-    // Update schedule button based on scheduled state
+    // Schedule button state
     const schedBtn = document.getElementById('scheduleBtn');
-    schedBtn.style.display = 'flex';
+    const swapBtn  = document.getElementById('swapBtn');
     if (isScheduled) {
-      schedBtn.innerHTML = '🗑 Unschedule this meal';
-      schedBtn.classList.remove('schedule');
-      schedBtn.classList.add('unschedule');
+      schedBtn.textContent = '🗑 Unschedule this meal';
+      schedBtn.className = 'recipe-action-btn unschedule';
+      swapBtn.style.display = 'none';
     } else {
-      schedBtn.innerHTML = '📅 Schedule this meal';
-      schedBtn.classList.remove('unschedule');
-      schedBtn.classList.add('schedule');
+      schedBtn.textContent = '📅 Schedule this meal';
+      schedBtn.className = 'recipe-action-btn schedule';
+      swapBtn.style.display = 'flex';
     }
+    schedBtn.disabled = false;
 
     try {
-      let recipePrompt;
+      const prompt = meal.recipeUrl
+        ? `The user wants to make a recipe from this URL: ${meal.recipeUrl}. If accessible, extract and present the recipe with ## Ingredients, ## Steps, ## Leftover Idea sections. If paywalled, say so and suggest a similar recipe. Scale for 2 people, 30 min or less.`
+        : `Give me the full recipe for "${meal.name}" (${meal.cuisine}, pescatarian, serves 2, 30 min or less).\n\n## Ingredients\n(bullet list)\n\n## Steps\n(numbered list)\n\n## Leftover Idea\n(one sentence)\n\nNo preamble.`;
 
-      if (meal.recipeUrl) {
-        // External recipe — fetch URL content and ask Claude to format it
-        recipePrompt = `The user wants to make a recipe from this URL: ${meal.recipeUrl}
-If you can access the URL, extract and present the recipe formatted with:
-## Ingredients
-## Steps
-## Leftover Idea
-If you cannot access the URL (paywall, etc), say so clearly and suggest a similar recipe instead.
-Scale for 2 people, 30 min or less.`;
-      } else {
-        recipePrompt = `Give me the full recipe for "${meal.name}" (${meal.cuisine}, pescatarian, serves 2, 30 min or less).
-
-## Ingredients
-(bullet list)
-
-## Steps
-(numbered list)
-
-## Leftover Idea
-(one sentence on how to repurpose this tomorrow)
-
-Be concise and practical. No preamble.`;
-      }
-
-      const recipe = await callClaude([{ role: 'user', content: recipePrompt }]);
-
+      const recipe = await callClaude([{ role: 'user', content: prompt }]);
       document.getElementById('recipeLoading').style.display = 'none';
       document.getElementById('recipeBody').innerHTML = formatText(recipe);
       document.getElementById('recipeActions').style.display = 'flex';
-
     } catch (err) {
       document.getElementById('recipeLoading').style.display = 'none';
-      document.getElementById('recipeBody').innerHTML =
-        `<div class="error-msg">⚠️ ${err.message}</div>`;
+      document.getElementById('recipeBody').innerHTML = '<div class="error-msg">⚠️ ' + err.message + '</div>';
     }
   }
 
-  // ─── SWAP MEAL ───────────────────────────────────────────────────
+  // SWAP MEAL
   async function swapMeal() {
     const meal = currentPlan[currentMealIndex];
     document.getElementById('recipeBody').innerHTML = '';
@@ -1009,286 +905,197 @@ Be concise and practical. No preamble.`;
         .filter((m, i) => i !== currentMealIndex && m.type === 'cook')
         .map(m => m.name).join(', ');
 
-      const suggestion = await callClaude([{
-        role: 'user',
-        content: `Suggest a different ${meal.cuisine} pescatarian meal for ${meal.day} night to replace "${meal.name}".
-Constraints: pantry-first, 30 min or less, serves 2.
-Do not repeat: ${otherMeals || 'none'}.
-Return ONLY a JSON object, no markdown:
-{"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian":false,"keyIngredients":"ing1, ing2, ing3"}`
-      }], 400);
+      const raw = await callClaude([{ role: 'user', content:
+        `Suggest a different ${meal.cuisine} pescatarian meal for ${meal.day} to replace "${meal.name}". Pantry-first, 30 min, serves 2. Do not repeat: ${otherMeals || 'none'}.
+Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian":false,"keyIngredients":"ing1, ing2, ing3"}` }], 400);
 
-      const newMeal = JSON.parse(suggestion.replace(/```json|```/g, '').trim());
+      const newMeal = JSON.parse(raw.replace(/```json|```/g, '').trim());
       newMeal.day = meal.day; newMeal.type = 'cook'; newMeal.leftoverOf = null;
       currentPlan[currentMealIndex] = newMeal;
 
       document.getElementById('recipeTitle').textContent = newMeal.name;
-      document.getElementById('recipeDayLabel').textContent = `${newMeal.day} · ${newMeal.cuisine}`;
+      document.getElementById('recipeDayLabel').textContent = newMeal.day + ' · ' + newMeal.cuisine;
 
-      const recipe = await callClaude([{
-        role: 'user',
-        content: `Give me the full recipe for "${newMeal.name}" (${newMeal.cuisine}, pescatarian, serves 2, 30 min or less).
+      const schedBtn = document.getElementById('scheduleBtn');
+      schedBtn.textContent = '📅 Schedule this meal';
+      schedBtn.className = 'recipe-action-btn schedule';
+      schedBtn.disabled = false;
+      document.getElementById('swapBtn').style.display = 'flex';
 
-## Ingredients
-(bullet list)
-
-## Steps
-(numbered list)
-
-## Leftover Idea
-(one sentence)
-
-No preamble.`
-      }]);
+      const recipe = await callClaude([{ role: 'user', content:
+        `Give me the full recipe for "${newMeal.name}" (${newMeal.cuisine}, pescatarian, serves 2, 30 min or less).\n\n## Ingredients\n(bullet list)\n\n## Steps\n(numbered list)\n\n## Leftover Idea\n(one sentence)\n\nNo preamble.` }]);
 
       document.getElementById('recipeLoading').style.display = 'none';
       document.getElementById('recipeBody').innerHTML = formatText(recipe);
       document.getElementById('recipeActions').style.display = 'flex';
-      const schedBtn = document.getElementById('scheduleBtn');
-      schedBtn.style.display = 'flex';
-      schedBtn.innerHTML = '📅 Schedule this meal';
-      schedBtn.classList.remove('unschedule');
-      schedBtn.classList.add('schedule');
-      schedBtn.disabled = false;
-
     } catch (err) {
       document.getElementById('recipeLoading').style.display = 'none';
-      document.getElementById('recipeBody').innerHTML =
-        `<div class="error-msg">⚠️ ${err.message}</div>`;
+      document.getElementById('recipeBody').innerHTML = '<div class="error-msg">⚠️ ' + err.message + '</div>';
     }
   }
 
-  // ─── SCHEDULE MODAL ──────────────────────────────────────────────
+  // SCHEDULE MODAL
   function handleScheduleBtn() {
     const meal = currentPlan[currentMealIndex];
-    if (meal.isScheduled) {
+    if (meal && meal.isScheduled) {
       unscheduleMeal();
     } else {
       openScheduleModal();
     }
   }
 
-  async function unscheduleMeal() {
-    const meal = currentPlan[currentMealIndex];
-    const weekStr = weekKey(currentWeekMonday);
-    const weekAndDay = weekStr + '|' + meal.day;
-
-    const schedBtn = document.getElementById('scheduleBtn');
-    schedBtn.disabled = true;
-    schedBtn.innerHTML = '⏳ Removing…';
-
-    const success = await deleteRowInSheet('Schedule', 'week_day', weekAndDay);
-
-    if (success) {
-      // Restore meal to unscheduled state in local plan
-      meal.isScheduled = false;
-      meal.status = null;
-      currentPlan[currentMealIndex] = meal;
-
-      // Invalidate system prompt cache so ingredients are freed up
-      cachedSystemPrompt = null;
-
-      // Update button back to Schedule
-      schedBtn.disabled = false;
-      schedBtn.innerHTML = '📅 Schedule this meal';
-      schedBtn.classList.remove('unschedule');
-      schedBtn.classList.add('schedule');
-
-      // Re-render plan cards in background so badge is gone when they go back
-      renderPlanCards();
-
-      showToast('✓ Unscheduled — meal is back in the pool');
-    } else {
-      schedBtn.disabled = false;
-      schedBtn.innerHTML = '🗑 Unschedule this meal';
-      showToast('⚠️ Could not unschedule — try again.');
-    }
-  }
-
   function openScheduleModal() {
     const meal = currentPlan[currentMealIndex];
     document.getElementById('scheduleModalSubtitle').textContent =
-      `Scheduling "${meal.name}" for the week of ${weekLabel(currentWeekMonday)}.`;
-    // Pre-select the meal's day if available
-    const daySelect = document.getElementById('scheduleDay');
-    if (meal.day) {
-      for (let i = 0; i < daySelect.options.length; i++) {
-        if (daySelect.options[i].value === meal.day) { daySelect.selectedIndex = i; break; }
-      }
+      'Scheduling "' + meal.name + '" for the week of ' + weekLabel(currentWeekMonday) + '.';
+    const sel = document.getElementById('scheduleDay');
+    for (let i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === meal.day) { sel.selectedIndex = i; break; }
     }
     document.getElementById('scheduleModal').classList.add('open');
   }
 
   async function confirmSchedule() {
     const meal = currentPlan[currentMealIndex];
-    const day = document.getElementById('scheduleDay').value;
-    const scheduledBy = document.getElementById('scheduleBy').value;
+    const day  = document.getElementById('scheduleDay').value;
+    const by   = document.getElementById('scheduleBy').value;
     const weekStr = weekKey(currentWeekMonday);
-    const today = new Date().toLocaleDateString('en-US');
+    const today   = new Date().toLocaleDateString('en-US');
 
     closeModal('scheduleModal');
 
-    // Build the row to append to the Schedule tab
-    const row = [
-      weekStr, day, meal.name, meal.cuisine,
+    const row = [weekStr, day, meal.name, meal.cuisine,
       meal.isVegetarian ? 'true' : 'false',
-      meal.keyIngredients, 'scheduled', '',
-      scheduledBy, today, meal.recipeUrl || '', ''
-    ];
+      meal.keyIngredients, 'scheduled', '', by, today, meal.recipeUrl || '', ''];
 
-    // Write to sheet via Apps Script web app (if configured) or show manual fallback
-    const success = await writeRowToSheet('Schedule', row);
+    const success = await sheetWrite({ action: 'appendRow', tab: 'Schedule', row });
 
     if (success) {
-      // Update local plan state
       meal.day = day;
       meal.isScheduled = true;
       meal.status = 'scheduled';
       currentPlan[currentMealIndex] = meal;
-
-      // Update button to Unschedule
-      const schedBtn = document.getElementById('scheduleBtn');
-      schedBtn.innerHTML = '🗑 Unschedule this meal';
-      schedBtn.classList.remove('schedule');
-      schedBtn.classList.add('unschedule');
-
-      // Show confirmation
-      const body = document.getElementById('recipeBody');
-      body.innerHTML = `<div class="success-msg">📅 "${meal.name}" scheduled for ${day}, week of ${weekLabel(currentWeekMonday)}!</div>` + body.innerHTML;
-
-      // Invalidate cached system prompt so next plan call knows about this
       cachedSystemPrompt = null;
 
-      // Re-render plan cards so the green badge and View Recipe button appear
+      const schedBtn = document.getElementById('scheduleBtn');
+      schedBtn.textContent = '🗑 Unschedule this meal';
+      schedBtn.className = 'recipe-action-btn unschedule';
+      schedBtn.disabled = false;
+      document.getElementById('swapBtn').style.display = 'none';
+
+      const body = document.getElementById('recipeBody');
+      body.innerHTML = '<div class="success-msg">📅 "' + meal.name + '" scheduled for ' + day + ', week of ' + weekLabel(currentWeekMonday) + '!</div>' + body.innerHTML;
+
       renderPlanCards();
     } else {
-      // Write failed — show a simple error toast, don't expose manual instructions
       showToast('⚠️ Could not save to sheet — try again.');
     }
   }
 
-  // ─── MARK AS MADE MODAL ──────────────────────────────────────────
+  async function unscheduleMeal() {
+    const meal = currentPlan[currentMealIndex];
+    const weekAndDay = weekKey(currentWeekMonday) + '|' + meal.day;
+    const schedBtn = document.getElementById('scheduleBtn');
+    schedBtn.disabled = true;
+    schedBtn.textContent = '⏳ Removing…';
+
+    const success = await sheetWrite({ action: 'deleteRow', tab: 'Schedule', matchCol: 'week_day', matchVal: weekAndDay });
+
+    if (success) {
+      meal.isScheduled = false;
+      meal.status = null;
+      currentPlan[currentMealIndex] = meal;
+      cachedSystemPrompt = null;
+
+      schedBtn.disabled = false;
+      schedBtn.textContent = '📅 Schedule this meal';
+      schedBtn.className = 'recipe-action-btn schedule';
+      document.getElementById('swapBtn').style.display = 'flex';
+
+      renderPlanCards();
+      showToast('✓ Unscheduled — meal is back in the pool');
+    } else {
+      schedBtn.disabled = false;
+      schedBtn.textContent = '🗑 Unschedule this meal';
+      showToast('⚠️ Could not unschedule — try again.');
+    }
+  }
+
+  // MADE MODAL
   function openMadeModal(mealKey, mealName) {
     madeModalMealKey = mealKey;
     selectedRating = null;
     document.getElementById('thumbsUp').classList.remove('selected');
     document.getElementById('thumbsDown').classList.remove('selected');
     document.getElementById('madeNotes').value = '';
-    document.getElementById('madeModalTitle').textContent = `You made "${mealName}"! 🎉`;
+    document.getElementById('notesCount').textContent = '0';
+    document.getElementById('madeModalTitle').textContent = 'You made "' + mealName + '"! 🎉';
     document.getElementById('madeModal').classList.add('open');
+  }
+
+  function selectRating(dir) {
+    selectedRating = dir;
+    document.getElementById('thumbsUp').classList.toggle('selected', dir === 'up');
+    document.getElementById('thumbsDown').classList.toggle('selected', dir === 'down');
   }
 
   function updateNotesCount() {
     const len = document.getElementById('madeNotes').value.length;
-    const el = document.getElementById('notesCount');
+    const el  = document.getElementById('notesCount');
     el.textContent = len;
     el.style.color = len > 120 ? 'var(--accent)' : 'var(--muted)';
   }
 
-  function selectRating(direction) {
-    selectedRating = direction;
-    document.getElementById('thumbsUp').classList.toggle('selected', direction === 'up');
-    document.getElementById('thumbsDown').classList.toggle('selected', direction === 'down');
-  }
-
   async function confirmMade() {
     if (!madeModalMealKey) return;
-    const notes = document.getElementById('madeNotes').value.trim();
+    const notes  = document.getElementById('madeNotes').value.trim();
     const rating = selectedRating === 'up' ? 'thumbs_up' : selectedRating === 'down' ? 'thumbs_down' : '';
 
     closeModal('madeModal');
 
     const [weekStr, day] = madeModalMealKey.split('|');
-    const mealInPlan = currentPlan?.find(m => m.day === day && m.isScheduled);
-
-    // Update local state immediately so UI responds fast
+    const mealInPlan = currentPlan && currentPlan.find(m => m.day === day && m.isScheduled);
     if (mealInPlan) {
       mealInPlan.status = 'made';
       renderPlanCards();
     }
 
-    // Write status + rating back to Schedule tab
-    // Match on Week (col 1) + Day (col 2) combined key
-    const weekAndDay = weekStr + '|' + day;
     const updates = { 7: 'made' };
     if (rating) updates[8] = rating;
-    if (notes) updates[12] = notes;
-    const success = await updateRowInSheet('Schedule', 'week_day', weekAndDay, updates);
+    if (notes)  updates[12] = notes;
 
-    const ratingEmoji = rating === 'thumbs_up' ? ' · 👍' : rating === 'thumbs_down' ? ' · 👎' : '';
-    if (success) {
-      showToast('✓ Marked as made' + ratingEmoji + '. Remember to update your pantry!');
-    } else {
-      showToast('✓ Marked as made locally' + ratingEmoji + ' — sheet update failed, check manually.');
-    }
+    const success = await sheetWrite({
+      action: 'updateRow', tab: 'Schedule',
+      matchCol: 'week_day', matchVal: weekStr + '|' + day,
+      updates
+    });
+
+    const emoji = rating === 'thumbs_up' ? ' · 👍' : rating === 'thumbs_down' ? ' · 👎' : '';
+    showToast(success
+      ? '✓ Marked as made' + emoji + '. Remember to update your pantry!'
+      : '✓ Marked locally' + emoji + ' — sheet update failed.');
   }
 
-  // ─── GROCERY LIST ────────────────────────────────────────────────
+  // GROCERY LIST
   async function getGroceryList() {
     showView('home');
-    const cookMeals = currentPlan?.filter(m => m.type === 'cook') || [];
-    const planSummary = cookMeals.map(m => `${m.day}: ${m.name}`).join(', ') || 'this week';
+    const cookMeals = (currentPlan || []).filter(m => m.type === 'cook');
+    const summary   = cookMeals.map(m => m.day + ': ' + m.name).join(', ') || 'this week';
     sendRequest('custom',
-      `Generate a grocery list for week of ${weekLabel(currentWeekMonday)}: ${planSummary}. Cross-reference the pantry and staples — only list what we actually need to buy. Show each item with an estimated price and a total.`
-    );
+      'Generate a grocery list for week of ' + weekLabel(currentWeekMonday) + ': ' + summary +
+      '. Cross-reference the pantry and staples — only list what we actually need to buy. Show each item with an estimated price and a total.');
   }
 
-  // ─── SHEET WRITE ─────────────────────────────────────────────────
-  async function writeRowToSheet(tabName, row) {
-    try {
-      const res = await fetch(PROXY_URL + '/sheet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'appendRow', tab: tabName, row })
-      });
-      const data = await res.json();
-      return data.ok === true;
-    } catch (err) {
-      console.error('Sheet write failed:', err);
-      return false;
-    }
-  }
-
-  async function updateRowInSheet(tabName, matchCol, matchVal, updates) {
-    try {
-      const res = await fetch(PROXY_URL + '/sheet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'updateRow', tab: tabName, matchCol, matchVal, updates })
-      });
-      const data = await res.json();
-      return data.ok === true;
-    } catch (err) {
-      console.error('Sheet update failed:', err);
-      return false;
-    }
-  }
-
-  async function deleteRowInSheet(tabName, matchCol, matchVal) {
-    try {
-      const res = await fetch(PROXY_URL + '/sheet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'deleteRow', tab: tabName, matchCol, matchVal })
-      });
-      const data = await res.json();
-      return data.ok === true;
-    } catch (err) {
-      console.error('Sheet delete failed:', err);
-      return false;
-    }
-  }
-
-  // ─── GENERAL REQUESTS ────────────────────────────────────────────
+  // GENERAL REQUESTS
   const PRESETS = {
-    grocery: `Generate a grocery list for this week. Cross-reference the pantry and staples first. Show each item with estimated price and a total.`,
+    grocery: 'Generate a grocery list for this week. Cross-reference the pantry and staples first. Show each item with estimated price and a total.',
     pantry:  'What is currently in the pantry? Flag anything that should be used soon based on when it was added.',
     surprise:'Suggest one creative meal I can make mostly from what is already on hand. Give me the full recipe.'
   };
 
-  async function sendRequest(type, customMessage = null) {
+  async function sendRequest(type, customMessage) {
     const message = customMessage || PRESETS[type];
-    const titles = { grocery:'🛒 Grocery List', pantry:'🧺 Pantry Check', surprise:'✨ Meal Idea', custom:'💬 Response' };
+    const titles  = { grocery:'🛒 Grocery List', pantry:'🧺 Pantry Check', surprise:'✨ Meal Idea', custom:'💬 Response' };
     showLoading(titles[type] || titles.custom);
     try {
       const text = await callClaude([{ role: 'user', content: message }]);
@@ -1298,53 +1105,42 @@ No preamble.`
 
   function sendCustom() {
     const input = document.getElementById('customInput');
-    const msg = input.value.trim();
+    const msg   = input.value.trim();
     if (!msg) return;
     sendRequest('custom', msg);
     input.value = '';
   }
 
-  document.getElementById('customInput').addEventListener('keydown', (e) => {
+  document.getElementById('customInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendCustom(); }
   });
 
-  // ─── MODAL HELPERS ───────────────────────────────────────────────
+  // MODAL HELPERS
   function closeModal(id) {
     document.getElementById(id).classList.remove('open');
   }
-  // Close modal on overlay tap
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', (e) => {
+  document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+    overlay.addEventListener('click', function(e) {
       if (e.target === overlay) overlay.classList.remove('open');
     });
   });
 
-  // ─── TOAST ───────────────────────────────────────────────────────
+  // TOAST
   function showToast(msg) {
     const toast = document.createElement('div');
-    toast.style.cssText = `
-      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-      background: var(--ink); color: white; padding: 12px 20px;
-      border-radius: 30px; font-size: 13px; font-weight: 500;
-      z-index: 200; white-space: nowrap; animation: slideUp 0.3s ease;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    `;
+    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:white;padding:12px 20px;border-radius:30px;font-size:13px;font-weight:500;z-index:200;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
     toast.textContent = msg;
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+    setTimeout(function() { toast.remove(); }, 3000);
   }
 
-  // ─── UI HELPERS ──────────────────────────────────────────────────
+  // UI HELPERS
   function showLoading(title) {
-    const card = document.getElementById('responseCard');
     document.getElementById('responseTitle').textContent = title;
-    document.getElementById('responseBody').innerHTML = `
-      <div class="loading">
-        <div class="loading-dots"><span></span><span></span><span></span></div>
-        Thinking…
-      </div>`;
-    card.classList.add('visible');
-    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    document.getElementById('responseBody').innerHTML =
+      '<div class="loading"><div class="loading-dots"><span></span><span></span><span></span></div>Thinking…</div>';
+    document.getElementById('responseCard').classList.add('visible');
+    document.getElementById('responseCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   function showResponse(title, text) {
@@ -1354,16 +1150,16 @@ No preamble.`
 
   function showError(msg) {
     document.getElementById('responseBody').innerHTML =
-      `<div class="error-msg">⚠️ ${msg}<br><small>Check your connection and try again.</small></div>`;
+      '<div class="error-msg">⚠️ ' + msg + '<br><small>Check your connection and try again.</small></div>';
   }
 
   function clearResponse() { document.getElementById('responseCard').classList.remove('visible'); }
 
   function copyResponse() {
-    navigator.clipboard.writeText(document.getElementById('responseBody').innerText).then(() => {
-      const btn = event.target;
+    navigator.clipboard.writeText(document.getElementById('responseBody').innerText).then(function() {
+      var btn = event.target;
       btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy', 1500);
+      setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
     });
   }
 
@@ -1371,18 +1167,21 @@ No preamble.`
     return text
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/^#{1,3} (.+)$/gm, '<h3>$1</h3>')
-      .replace(/^\| (.+)$/gm, match => {
+      .replace(/^\| (.+)$/gm, function(match) {
         if (match.includes('---')) return '';
-        const cells = match.split('|').filter(c => c.trim());
-        return '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
+        var cells = match.split('|').filter(function(c) { return c.trim(); });
+        return '<tr>' + cells.map(function(c) { return '<td>' + c.trim() + '</td>'; }).join('') + '</tr>';
       })
-      .replace(/(<tr>[\s\S]*?<\/tr>\n?)+/g, t => `<table>${t}</table>`)
+      .replace(/(<tr>[\s\S]*?<\/tr>\n?)+/g, function(t) { return '<table>' + t + '</table>'; })
       .replace(/^- (.+)$/gm, '<li>$1</li>')
       .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
-      .replace(/(<li>.*<\/li>\n?)+/g, l => `<ul>${l}</ul>`)
+      .replace(/(<li>.*<\/li>\n?)+/g, function(l) { return '<ul>' + l + '</ul>'; })
       .replace(/\n\n/g, '</p><p>')
       .trim();
   }
+
+  // INIT
+  currentWeekMonday = getThisWeekMonday();
 </script>
 </body>
 </html>
