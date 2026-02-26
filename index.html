@@ -544,7 +544,7 @@
 
     <div class="modal-field" style="background: var(--green-light); border-radius: 10px; padding: 12px; border: 1px solid #86EFAC;">
       <div style="font-size: 12px; color: var(--green); font-weight: 500; margin-bottom: 4px;">🧺 Pantry update</div>
-      <div style="font-size: 13px; color: var(--ink);">After marking as made, remember to update your pantry in Google Sheets to remove ingredients you used. <em>OAuth writeback coming soon.</em></div>
+      <div style="font-size: 13px; color: var(--ink);">After marking as made, remember to update your pantry in Google Sheets to remove the ingredients you used.</div>
     </div>
 
     <div class="modal-actions">
@@ -563,9 +563,7 @@
   const SCHEDULE_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=1682925418`;
   const RECIPES_CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=826639951`;
 
-  // Google Sheets API (for writes) — requires Apps Script web app
-  // Set this to your deployed Apps Script web app URL when ready
-  const SHEETS_WRITE_URL = null; // placeholder for future OAuth/Apps Script writeback
+  const SHEETS_WRITE_URL = 'https://script.google.com/macros/s/AKfycbxpUbapQf1BBroritxnuTWA41CTtqfYpJXHXwwJ1oYgZAcGTRooJpq5thp9wO02lV2uYg/exec';
 
   // ─── STATE ───────────────────────────────────────────────────────
   let currentPlan       = null;
@@ -1119,18 +1117,32 @@ No preamble.`
 
     closeModal('madeModal');
 
-    // Find the meal in currentPlan and update its status
     const [weekStr, day] = madeModalMealKey.split('|');
     const mealInPlan = currentPlan?.find(m => m.day === day && m.isScheduled);
 
+    // Update local state immediately so UI responds fast
     if (mealInPlan) {
       mealInPlan.status = 'made';
-      // Re-render so "I Made This" button disappears and badge updates
       renderPlanCards();
     }
 
-    // Show toast
-    showToast('✓ Marked as made' + (rating ? (rating === 'thumbs_up' ? ' · 👍' : ' · 👎') : '') + '. Remember to update your pantry!');
+    // Write status + rating back to Schedule tab
+    // Match on Week (col 1) AND Day (col 2) — updateRow matches first found,
+    // so we match on a combined key by finding week+day together
+    const weekAndDay = weekStr + '|' + day;
+    const success = await updateRowInSheet('Schedule', 'week_day', weekAndDay, {
+      7: 'made',
+      8: rating,
+      // col 9 = notes if provided
+      ...(notes ? { 9: notes } : {})
+    });
+
+    const ratingEmoji = rating === 'thumbs_up' ? ' · 👍' : rating === 'thumbs_down' ? ' · 👎' : '';
+    if (success) {
+      showToast('✓ Marked as made' + ratingEmoji + '. Remember to update your pantry!');
+    } else {
+      showToast('✓ Marked as made locally' + ratingEmoji + ' — sheet update failed, check manually.');
+    }
   }
 
   // ─── GROCERY LIST ────────────────────────────────────────────────
@@ -1145,16 +1157,35 @@ No preamble.`
 
   // ─── SHEET WRITE ─────────────────────────────────────────────────
   async function writeRowToSheet(tabName, row) {
-    // When SHEETS_WRITE_URL is configured, this will POST to the Apps Script web app
-    if (!SHEETS_WRITE_URL) return false;
     try {
       const res = await fetch(SHEETS_WRITE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tab: tabName, row })
+        body: JSON.stringify({ action: 'appendRow', tab: tabName, row }),
+        redirect: 'follow'
       });
-      return res.ok;
-    } catch { return false; }
+      const data = await res.json();
+      return data.ok === true;
+    } catch (err) {
+      console.error('Sheet write failed:', err);
+      return false;
+    }
+  }
+
+  async function updateRowInSheet(tabName, matchCol, matchVal, updates) {
+    try {
+      const res = await fetch(SHEETS_WRITE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'updateRow', tab: tabName, matchCol, matchVal, updates }),
+        redirect: 'follow'
+      });
+      const data = await res.json();
+      return data.ok === true;
+    } catch (err) {
+      console.error('Sheet update failed:', err);
+      return false;
+    }
   }
 
   // ─── GENERAL REQUESTS ────────────────────────────────────────────
