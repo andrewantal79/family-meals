@@ -174,8 +174,8 @@
   .meal-card.clickable { cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .meal-card.clickable:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(194,65,12,0.08); }
   .meal-card.clickable:active { transform: scale(0.99); }
-  .meal-card.is-scheduled { background: #F0FDF4; border-color: #86EFAC; }
-  .meal-card.is-scheduled:hover { border-color: #86EFAC; box-shadow: none; }
+  .meal-card.is-scheduled { background: #F0FDF4; border-color: #86EFAC; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .meal-card.is-scheduled:hover { border-color: #4ADE80; box-shadow: 0 4px 16px rgba(61,107,79,0.1); }
 
   .meal-card-inner { padding: 16px; display: flex; align-items: flex-start; gap: 14px; }
   .meal-day {
@@ -804,6 +804,8 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
           ? '<span class="meal-tag url-tag">🔗 External recipe</span>' : '';
 
         el.className = 'meal-card is-scheduled';
+        el.dataset.action = 'viewScheduled';
+        el.dataset.index = i;
         el.innerHTML =
           '<div class="meal-card-inner">' +
             '<div class="meal-day">' + meal.day + '</div>' +
@@ -848,6 +850,7 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
 
     // Single event listener handles all card interactions
     container.onclick = function(e) {
+      // Find the most specific data-action element clicked
       const target = e.target.closest('[data-action]');
       if (!target) return;
       const action = target.dataset.action;
@@ -855,6 +858,7 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
       if (action === 'viewRecipe')    viewRecipe(index);
       if (action === 'viewScheduled') viewScheduledRecipe(index);
       if (action === 'markMade') {
+        e.stopPropagation();
         const meal = currentPlan[index];
         openMadeModal(weekKey(currentWeekMonday) + '|' + meal.day, meal.name);
       }
