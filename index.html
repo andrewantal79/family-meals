@@ -1269,16 +1269,16 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
       if (!data.ok) throw new Error(data.error);
 
       // Merge prices back into groceryItems state
-      data.results.forEach(function(result) {
-        const match = groceryItems.find(function(i) {
-          return i.name.toLowerCase() === result.name.toLowerCase();
-        });
-        if (match) {
-          match.price = result.price;
-          match.priceLoading = false;
-          match.krogerDescription = result.description;
-          match.krogerSize = result.size;
-          match.onSale = result.salePrice && result.salePrice < result.price;
+      // Results come back in same order as items we sent — match by index
+      data.results.forEach(function(result, idx) {
+        if (idx < groceryItems.length) {
+          var item = groceryItems[idx];
+          item.price = result.price;
+          item.priceLoading = false;
+          item.krogerDescription = result.description || null;
+          item.krogerSize = result.size || null;
+          item.onSale = !!(result.salePrice && result.salePrice < result.price);
+          item.found = result.found;
         }
       });
 
