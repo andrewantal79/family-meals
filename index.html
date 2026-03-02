@@ -1362,11 +1362,11 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
 
     var totalText;
     if (pricesLoading) {
-      totalText = 'Fetching Mariano's prices…';
+      totalText = 'Fetching Mariano\'s prices…';
     } else if (checkedCount > 0) {
       totalText = '$' + checkedTotal.toFixed(2) + ' checked / $' + grandTotal.toFixed(2) + ' total';
     } else {
-      totalText = grandTotal > 0 ? '$' + grandTotal.toFixed(2) + ' at Mariano's' : '';
+      totalText = grandTotal > 0 ? '$' + grandTotal.toFixed(2) + ' at Mariano\'s' : '';
     }
     document.getElementById('groceryTotal').textContent = totalText;
 
