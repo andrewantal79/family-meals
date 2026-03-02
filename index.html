@@ -1227,25 +1227,67 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
 
   async function sendGroceryRequest(customMessage) {
     showLoading('🛒 Grocery List');
-    // Hide copy button for checklist view
     document.getElementById('copyBtn').style.display = 'none';
     try {
       const baseMsg = customMessage ||
         'Generate a grocery list for this week. Cross-reference the pantry and staples first — only items we actually need to buy.';
 
+      // Step 1: Ask Claude for the item list (no prices yet)
       const text = await callClaude([{ role: 'user', content:
-        baseMsg + '\n\nReturn ONLY a valid JSON array. No markdown, no explanation, no total line.' +
-        '\nEach item: {"name":"Item Name","quantity":"2 fillets","price":12.00}' +
+        baseMsg + '\n\nReturn ONLY a valid JSON array. No markdown, no explanation.' +
+        '\nEach item: {"name":"Item Name","quantity":"2 fillets"}' +
         '\nMatch ingredient names exactly to what is already in the pantry when possible (same capitalization).' +
+        '\nDo NOT include prices — those will be fetched separately.' +
         '\nReturn the JSON array only.'
-      }], 1500);
+      }], 1000);
 
       const clean = text.replace(/```json|```/g, '').trim();
       const items = JSON.parse(clean);
-      showGroceryChecklist(items);
+
+      // Show checklist immediately with no prices while we fetch them
+      showGroceryChecklist(items.map(function(item) {
+        return Object.assign({}, item, { price: null, priceLoading: true });
+      }));
+
+      // Step 2: Fetch real prices from Kroger in background
+      fetchKrogerPrices(items);
+
     } catch (err) {
       document.getElementById('copyBtn').style.display = '';
       showError(err.message);
+    }
+  }
+
+  async function fetchKrogerPrices(items) {
+    try {
+      const res = await fetch(PROXY_URL + '/kroger/prices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: items.map(function(i) { return i.name; }) })
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+
+      // Merge prices back into groceryItems state
+      data.results.forEach(function(result) {
+        const match = groceryItems.find(function(i) {
+          return i.name.toLowerCase() === result.name.toLowerCase();
+        });
+        if (match) {
+          match.price = result.price;
+          match.priceLoading = false;
+          match.krogerDescription = result.description;
+          match.krogerSize = result.size;
+          match.onSale = result.salePrice && result.salePrice < result.price;
+        }
+      });
+
+      renderGroceryItems();
+    } catch (err) {
+      // Price fetch failed — just show items without prices
+      groceryItems.forEach(function(i) { i.priceLoading = false; });
+      renderGroceryItems();
+      console.warn('Kroger price fetch failed:', err.message);
     }
   }
 
@@ -1278,13 +1320,27 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
       var el = document.createElement('div');
       el.className = 'grocery-item' + (item.checked ? ' checked' : '');
       el.dataset.index = i;
+
+      var priceDisplay;
+      if (item.priceLoading) {
+        priceDisplay = '<span style="color:var(--muted);font-size:11px;">fetching…</span>';
+      } else if (item.price) {
+        var saleTag = item.onSale ? ' <span style="color:var(--green);font-size:10px;font-weight:500;">SALE</span>' : '';
+        priceDisplay = '$' + item.price.toFixed(2) + saleTag;
+      } else {
+        priceDisplay = '<span style="color:var(--muted);">—</span>';
+      }
+
+      var detail = item.quantity || '';
+      if (item.krogerSize) detail += (detail ? ' · ' : '') + item.krogerSize;
+
       el.innerHTML =
         '<div class="grocery-checkbox">' + (item.checked ? '✓' : '') + '</div>' +
         '<div class="grocery-item-info">' +
           '<div class="grocery-item-name">' + item.name + '</div>' +
-          '<div class="grocery-item-detail">' + (item.quantity || '') + '</div>' +
+          '<div class="grocery-item-detail">' + detail + '</div>' +
         '</div>' +
-        '<div class="grocery-item-price">$' + (item.price ? item.price.toFixed(2) : '—') + '</div>';
+        '<div class="grocery-item-price">' + priceDisplay + '</div>';
 
       container.appendChild(el);
     });
@@ -1302,11 +1358,17 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
     var checkedTotal = groceryItems.filter(function(i) { return i.checked; })
       .reduce(function(sum, i) { return sum + (i.price || 0); }, 0);
     var grandTotal = groceryItems.reduce(function(sum, i) { return sum + (i.price || 0); }, 0);
+    var pricesLoading = groceryItems.some(function(i) { return i.priceLoading; });
 
-    document.getElementById('groceryTotal').textContent =
-      checkedCount > 0
-        ? '$' + checkedTotal.toFixed(2) + ' checked / $' + grandTotal.toFixed(2) + ' total'
-        : '$' + grandTotal.toFixed(2) + ' estimated total';
+    var totalText;
+    if (pricesLoading) {
+      totalText = 'Fetching Mariano's prices…';
+    } else if (checkedCount > 0) {
+      totalText = '$' + checkedTotal.toFixed(2) + ' checked / $' + grandTotal.toFixed(2) + ' total';
+    } else {
+      totalText = grandTotal > 0 ? '$' + grandTotal.toFixed(2) + ' at Mariano's' : '';
+    }
+    document.getElementById('groceryTotal').textContent = totalText;
 
     var sendBtn = document.getElementById('grocerySendBtn');
     if (checkedCount > 0) {
