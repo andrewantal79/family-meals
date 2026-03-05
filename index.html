@@ -535,27 +535,37 @@
 <!-- MADE MODAL -->
 <div class="modal-overlay" id="madeModal">
   <div class="modal">
-    <div class="modal-title" id="madeModalTitle">You made this! 🎉</div>
-    <div class="modal-subtitle">How did it go?</div>
-    <div class="modal-field">
-      <label class="modal-label">Rate this recipe</label>
-      <div class="rating-row">
-        <button class="rating-btn thumbs-up" id="thumbsUp" onclick="selectRating('up')">👍</button>
-        <button class="rating-btn thumbs-down" id="thumbsDown" onclick="selectRating('down')">👎</button>
+    <!-- Step 1: Rating + Notes -->
+    <div id="madeStep1">
+      <div class="modal-title" id="madeModalTitle">You made this! 🎉</div>
+      <div class="modal-subtitle">How did it go?</div>
+      <div class="modal-field">
+        <label class="modal-label">Rate this recipe</label>
+        <div class="rating-row">
+          <button class="rating-btn thumbs-up" id="thumbsUp" onclick="selectRating('up')">👍</button>
+          <button class="rating-btn thumbs-down" id="thumbsDown" onclick="selectRating('down')">👎</button>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Notes (optional)</label>
+        <input type="text" class="modal-input" id="madeNotes" placeholder="e.g. Reduce salt next time…" maxlength="140" oninput="updateNotesCount()">
+        <div style="font-size:11px; color:var(--muted); text-align:right; margin-top:4px;"><span id="notesCount">0</span>/140</div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn green" onclick="goToPantryStep()">Next: Update Pantry →</button>
+        <button class="modal-btn secondary" onclick="closeModal('madeModal')">Cancel</button>
       </div>
     </div>
-    <div class="modal-field">
-      <label class="modal-label">Notes (optional)</label>
-      <input type="text" class="modal-input" id="madeNotes" placeholder="e.g. Reduce salt next time…" maxlength="140" oninput="updateNotesCount()">
-      <div style="font-size:11px; color:var(--muted); text-align:right; margin-top:4px;"><span id="notesCount">0</span>/140</div>
-    </div>
-    <div class="modal-field" style="background: var(--green-light); border-radius: 10px; padding: 12px; border: 1px solid #86EFAC;">
-      <div style="font-size: 12px; color: var(--green); font-weight: 500; margin-bottom: 4px;">🧺 Pantry update</div>
-      <div style="font-size: 13px; color: var(--ink);">After marking as made, remember to update your pantry in Google Sheets to remove the ingredients you used.</div>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn green" onclick="confirmMade()">✓ Mark as Made</button>
-      <button class="modal-btn secondary" onclick="closeModal('madeModal')">Cancel</button>
+
+    <!-- Step 2: Pantry deduction -->
+    <div id="madeStep2" style="display:none">
+      <div class="modal-title">Update Pantry 🧺</div>
+      <div class="modal-subtitle" id="pantryStepSubtitle">Adjust quantities used — we'll deduct these from your pantry.</div>
+      <div id="pantryItemsList" style="max-height:40vh; overflow-y:auto; margin-bottom:16px;"></div>
+      <div class="modal-actions">
+        <button class="modal-btn green" id="confirmPantryBtn" onclick="confirmMadeWithPantry()">✓ Confirm & Update Pantry</button>
+        <button class="modal-btn secondary" onclick="confirmMadeSkipPantry()">Skip pantry update</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1144,11 +1154,16 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
   function openMadeModal(mealKey, mealName) {
     madeModalMealKey = mealKey;
     selectedRating = null;
+    pantryItemsToDeduct = [];
     document.getElementById('thumbsUp').classList.remove('selected');
     document.getElementById('thumbsDown').classList.remove('selected');
     document.getElementById('madeNotes').value = '';
     document.getElementById('notesCount').textContent = '0';
     document.getElementById('madeModalTitle').textContent = 'You made "' + mealName + '"! 🎉';
+    // Always start on step 1
+    document.getElementById('madeStep1').style.display = 'block';
+    document.getElementById('madeStep2').style.display = 'none';
+    document.getElementById('confirmPantryBtn').textContent = '✓ Confirm & Update Pantry';
     document.getElementById('madeModal').classList.add('open');
   }
 
@@ -1165,34 +1180,155 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
     el.style.color = len > 120 ? 'var(--accent)' : 'var(--muted)';
   }
 
-  async function confirmMade() {
-    if (!madeModalMealKey) return;
-    const notes  = document.getElementById('madeNotes').value.trim();
-    const rating = selectedRating === 'up' ? 'thumbs_up' : selectedRating === 'down' ? 'thumbs_down' : '';
+  // Pantry deduction state
+  var pantryItemsToDeduct = [];
 
+  async function goToPantryStep() {
+    // Switch to step 2
+    document.getElementById('madeStep1').style.display = 'none';
+    document.getElementById('madeStep2').style.display = 'block';
+    document.getElementById('pantryStepSubtitle').textContent = 'Loading ingredients…';
+    document.getElementById('pantryItemsList').innerHTML =
+      '<div class="loading"><div class="loading-dots"><span></span><span></span><span></span></div>Checking pantry…</div>';
+    document.getElementById('confirmPantryBtn').disabled = true;
+
+    // Find the meal name from madeModalMealKey
+    var day = madeModalMealKey.split('|')[1];
+    var meal = currentPlan && currentPlan.find(function(m) { return m.day === day && m.isScheduled; });
+    var mealName = meal ? meal.name : 'this meal';
+
+    try {
+      // Ask Claude which pantry items this recipe uses
+      var text = await callClaude([{ role: 'user', content:
+        'The recipe "' + mealName + '" was just cooked. ' +
+        'Based on the pantry data in your context, list ONLY the ingredients from this recipe that are currently in the pantry with quantity > 0. ' +
+        'Return ONLY a JSON array. No markdown, no explanation. ' +
+        'Each item: {"name":"Green Beans","quantity":1,"measurement":"lb"} ' +
+        'quantity should be the amount the recipe uses (a number). ' +
+        'measurement is the unit (lb, oz, can, bunch, etc) or empty string for countable items. ' +
+        'Only include items that exist in the pantry. Return empty array [] if none match.'
+      }], 800);
+
+      var clean = text.replace(/```json|```/g, '').trim();
+      pantryItemsToDeduct = JSON.parse(clean);
+
+      if (pantryItemsToDeduct.length === 0) {
+        document.getElementById('pantryStepSubtitle').textContent = 'No pantry items matched for this recipe.';
+        document.getElementById('pantryItemsList').innerHTML =
+          '<div style="font-size:13px;color:var(--muted);padding:8px 0;">None of the ingredients for this recipe were found in your pantry with quantity > 0.</div>';
+        document.getElementById('confirmPantryBtn').disabled = false;
+        document.getElementById('confirmPantryBtn').textContent = '✓ Done';
+        return;
+      }
+
+      document.getElementById('pantryStepSubtitle').textContent =
+        'Adjust quantities used — we'll deduct these from your pantry.';
+      renderPantryDeductList();
+      document.getElementById('confirmPantryBtn').disabled = false;
+
+    } catch (err) {
+      document.getElementById('pantryItemsList').innerHTML =
+        '<div class="error-msg">⚠️ Could not load ingredients. You can skip and update manually.</div>';
+      document.getElementById('confirmPantryBtn').disabled = false;
+    }
+  }
+
+  function renderPantryDeductList() {
+    var container = document.getElementById('pantryItemsList');
+    container.innerHTML = '';
+
+    pantryItemsToDeduct.forEach(function(item, i) {
+      var el = document.createElement('div');
+      el.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);';
+      el.innerHTML =
+        '<div style="flex:1;">' +
+          '<div style="font-size:14px;font-weight:500;color:var(--ink);">' + item.name + '</div>' +
+          '<div style="font-size:11px;color:var(--muted);">Recipe calls for ' + item.quantity + (item.measurement ? ' ' + item.measurement : '') + '</div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:6px;">' +
+          '<input type="number" class="pantry-deduct-input" data-pantry-index="' + i + '" ' +
+            'value="' + item.quantity + '" min="0" step="0.5" ' +
+            'style="width:60px;padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;text-align:center;">' +
+          '<span style="font-size:13px;color:var(--muted);min-width:24px;">' + (item.measurement || '') + '</span>' +
+        '</div>';
+
+      container.appendChild(el);
+    });
+
+    // Handle qty changes
+    container.oninput = function(e) {
+      if (!e.target.classList.contains('pantry-deduct-input')) return;
+      var idx = parseInt(e.target.dataset.pantryIndex);
+      pantryItemsToDeduct[idx].usedQty = parseFloat(e.target.value) || 0;
+    };
+  }
+
+  async function confirmMadeWithPantry() {
+    var btn = document.getElementById('confirmPantryBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Updating…';
+
+    // Write the schedule update and pantry deductions in parallel
+    var scheduleSuccess = await writeScheduleAsMade();
+
+    var deductions = pantryItemsToDeduct.map(function(item) {
+      return sheetWrite({
+        action: 'deductPantryItem',
+        name:   item.name,
+        amount: item.usedQty !== undefined ? item.usedQty : item.quantity
+      });
+    });
+    var deductResults = await Promise.all(deductions);
+    var deductSuccess = deductResults.every(Boolean);
+
+    cachedSystemPrompt = null; // Invalidate so next call sees updated pantry
     closeModal('madeModal');
 
-    const [weekStr, day] = madeModalMealKey.split('|');
-    const mealInPlan = currentPlan && currentPlan.find(m => m.day === day && m.isScheduled);
+    var emoji = selectedRating === 'up' ? ' · 👍' : selectedRating === 'down' ? ' · 👎' : '';
+    showToast(
+      scheduleSuccess && deductSuccess
+        ? '✓ Marked as made' + emoji + ' · Pantry updated!'
+        : scheduleSuccess
+          ? '✓ Marked as made' + emoji + ' · Some pantry updates failed.'
+          : '✓ Marked locally' + emoji + ' · Sheet update failed.'
+    );
+  }
+
+  async function confirmMadeSkipPantry() {
+    await writeScheduleAsMade();
+    closeModal('madeModal');
+    var emoji = selectedRating === 'up' ? ' · 👍' : selectedRating === 'down' ? ' · 👎' : '';
+    showToast('✓ Marked as made' + emoji);
+  }
+
+  async function writeScheduleAsMade() {
+    if (!madeModalMealKey) return false;
+    var notes  = document.getElementById('madeNotes').value.trim();
+    var rating = selectedRating === 'up' ? 'thumbs_up' : selectedRating === 'down' ? 'thumbs_down' : '';
+    var parts  = madeModalMealKey.split('|');
+    var weekStr = parts[0];
+    var day     = parts[1];
+
+    var mealInPlan = currentPlan && currentPlan.find(function(m) { return m.day === day && m.isScheduled; });
     if (mealInPlan) {
       mealInPlan.status = 'made';
       renderPlanCards();
     }
 
-    const updates = { 7: 'made' };
+    var updates = { 7: 'made' };
     if (rating) updates[8] = rating;
     if (notes)  updates[12] = notes;
 
-    const success = await sheetWrite({
+    return sheetWrite({
       action: 'updateRow', tab: 'Schedule',
       matchCol: 'week_day', matchVal: weekStr + '|' + day,
       updates
     });
+  }
 
-    const emoji = rating === 'thumbs_up' ? ' · 👍' : rating === 'thumbs_down' ? ' · 👎' : '';
-    showToast(success
-      ? '✓ Marked as made' + emoji + '. Remember to update your pantry!'
-      : '✓ Marked locally' + emoji + ' — sheet update failed.');
+  async function confirmMade() {
+    // Legacy — now routes through goToPantryStep
+    goToPantryStep();
   }
 
   // GROCERY LIST
@@ -1235,7 +1371,8 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
       // Step 1: Ask Claude for the item list (no prices yet)
       const text = await callClaude([{ role: 'user', content:
         baseMsg + '\n\nReturn ONLY a valid JSON array. No markdown, no explanation.' +
-        '\nEach item: {"name":"Item Name","quantity":"2 fillets"}' +
+        '\nEach item: {"name":"Item Name","quantity":2,"measurement":"lb"}' +
+        '\nquantity must be a number. measurement is the unit (lb, oz, can, bunch, count, etc) or empty string for countable items like eggs.' +
         '\nMatch ingredient names exactly to what is already in the pantry when possible (same capitalization).' +
         '\nDo NOT include prices — those will be fetched separately.' +
         '\nReturn the JSON array only.'
@@ -1331,14 +1468,19 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
         priceDisplay = '<span style="color:var(--muted);">—</span>';
       }
 
-      var detail = item.quantity || '';
-      if (item.krogerSize) detail += (detail ? ' · ' : '') + item.krogerSize;
+      var measurement = item.measurement || '';
+      var krogerDetail = item.krogerSize ? ' · ' + item.krogerSize : '';
 
       el.innerHTML =
         '<div class="grocery-checkbox">' + (item.checked ? '✓' : '') + '</div>' +
         '<div class="grocery-item-info">' +
           '<div class="grocery-item-name">' + item.name + '</div>' +
-          '<div class="grocery-item-detail">' + detail + '</div>' +
+          '<div class="grocery-item-detail">' +
+            (item.checked
+              ? 'Bought: <input type="number" class="qty-input" data-grocery-index="' + i + '" value="' + (item.purchasedQty !== undefined ? item.purchasedQty : item.quantity) + '" min="0" step="0.5" style="width:50px;padding:2px 4px;border:1px solid var(--border);border-radius:4px;font-size:12px;"> ' + measurement + krogerDetail
+              : 'Need: ' + item.quantity + (measurement ? ' ' + measurement : '') + krogerDetail
+            ) +
+          '</div>' +
         '</div>' +
         '<div class="grocery-item-price">' + priceDisplay + '</div>';
 
@@ -1347,11 +1489,23 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
 
     // Event delegation for checkbox taps
     container.onclick = function(e) {
+      // Don't toggle checkbox if clicking the qty input
+      if (e.target.classList.contains('qty-input')) return;
       var item = e.target.closest('[data-index]');
       if (!item) return;
       var idx = parseInt(item.dataset.index);
       groceryItems[idx].checked = !groceryItems[idx].checked;
+      if (groceryItems[idx].checked && groceryItems[idx].purchasedQty === undefined) {
+        groceryItems[idx].purchasedQty = groceryItems[idx].quantity;
+      }
       renderGroceryItems();
+    };
+
+    // Handle qty input changes
+    container.oninput = function(e) {
+      if (!e.target.classList.contains('qty-input')) return;
+      var idx = parseInt(e.target.dataset.groceryIndex);
+      groceryItems[idx].purchasedQty = parseFloat(e.target.value) || 0;
     };
 
     // Update total and send button
@@ -1390,7 +1544,12 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
     var results = await Promise.all(checked.map(function(item) {
       return sheetWrite({
         action: 'upsertPantryItem',
-        item: { name: item.name, quantity: item.quantity, stored: 'Fridge' }
+        item: {
+          name:        item.name,
+          quantity:    item.purchasedQty !== undefined ? item.purchasedQty : item.quantity,
+          measurement: item.measurement || '',
+          stored:      'Fridge'
+        }
       });
     }));
 
