@@ -20,6 +20,7 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  button, [onclick] { touch-action: manipulation; cursor: pointer; }
 
   body {
     background: var(--cream);
@@ -84,6 +85,9 @@
     transition: all 0.2s ease; text-align: left;
     display: flex; flex-direction: column; gap: 8px;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
   }
   .action-btn:active { transform: scale(0.97); }
   .action-btn:hover { border-color: var(--accent); box-shadow: 0 4px 20px rgba(194,65,12,0.1); }
@@ -225,6 +229,7 @@
     cursor: pointer; font-family: 'DM Sans', sans-serif;
     font-size: 13px; font-weight: 500; transition: all 0.2s;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   .plan-cta.primary { background: var(--ink); color: white; }
   .plan-cta.primary:hover { background: #374151; }
@@ -401,7 +406,6 @@
 </head>
 <body>
 
-<div id="errorOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:white;z-index:9999;padding:20px;overflow:auto;font-size:12px;font-family:monospace;white-space:pre-wrap;"></div>
 <header>
   <div class="header-eyebrow">Antal Household</div>
   <h1>Family <em>Meals</em></h1>
@@ -573,14 +577,6 @@
 
 
 <script>
-
-  // Global error catcher — shows errors visually on mobile
-  window.onerror = function(msg, src, line, col, err) {
-    var el = document.getElementById('errorOverlay');
-    el.style.display = 'block';
-    el.textContent = 'JS ERROR:\n' + msg + '\nLine: ' + line + '\nCol: ' + col + '\n\n' + (err ? err.stack : '');
-    return false;
-  };
 
   // CONFIG
   const PROXY_URL        = 'https://family-meals-proxy.andrew-antal79.workers.dev';
@@ -1232,7 +1228,7 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
       }
 
       document.getElementById('pantryStepSubtitle').textContent =
-        'Adjust quantities used — we'll deduct these from your pantry.';
+        'Adjust quantities used \u2014 we\'ll deduct these from your pantry.';
       renderPantryDeductList();
       document.getElementById('confirmPantryBtn').disabled = false;
 
