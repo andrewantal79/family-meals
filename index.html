@@ -401,6 +401,7 @@
 </head>
 <body>
 
+<div id="errorOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:white;z-index:9999;padding:20px;overflow:auto;font-size:12px;font-family:monospace;white-space:pre-wrap;"></div>
 <header>
   <div class="header-eyebrow">Antal Household</div>
   <h1>Family <em>Meals</em></h1>
@@ -570,7 +571,16 @@
   </div>
 </div>
 
+
 <script>
+
+  // Global error catcher — shows errors visually on mobile
+  window.onerror = function(msg, src, line, col, err) {
+    var el = document.getElementById('errorOverlay');
+    el.style.display = 'block';
+    el.textContent = 'JS ERROR:\n' + msg + '\nLine: ' + line + '\nCol: ' + col + '\n\n' + (err ? err.stack : '');
+    return false;
+  };
 
   // CONFIG
   const PROXY_URL        = 'https://family-meals-proxy.andrew-antal79.workers.dev';
