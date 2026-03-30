@@ -1087,9 +1087,7 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
 
     try {
       const scaled = await callClaude([{ role: 'user', content:
-        'Scale the following recipe to ' + scaleLabel + '. Adjust all ingredient quantities accordingly. Keep the same format (## Ingredients, ## Steps, ## Leftover Idea). Return only the scaled recipe, no preamble.
-
-' + currentRecipeRaw
+        'Scale the following recipe to ' + scaleLabel + '. Adjust all ingredient quantities accordingly. Keep the same format (## Ingredients, ## Steps, ## Leftover Idea). Return only the scaled recipe, no preamble.\n\n' + currentRecipeRaw
       }], 1500);
       document.getElementById('recipeBody').innerHTML = formatText(scaled);
     } catch (err) {
