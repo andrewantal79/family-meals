@@ -1511,46 +1511,63 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
     container.innerHTML = '';
     aliasDecisions = {};
 
-    flaggedItems.forEach(function(item) {
+    flaggedItems.forEach(function(item, idx) {
       aliasDecisions[item.name] = 'same'; // default to same
 
       var el = document.createElement('div');
       el.style.cssText = 'padding:12px 0;border-bottom:1px solid var(--border);';
-      el.innerHTML =
-        '<div style="font-size:14px;font-weight:500;margin-bottom:8px;">' +
-          '"' + item.name + '" → matches staple "' + item.possibleStaple + '"' +
-        '</div>' +
-        '<div style="display:flex;gap:8px;">' +
-          '<button class="alias-btn same-btn" data-item="' + item.name + '" data-decision="same" ' +
-            'style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--green);background:var(--green-light);color:var(--green);font-size:13px;font-weight:500;cursor:pointer;" ' +
-            'onclick="setAliasDecision('' + item.name + '', 'same', this)">' +
-            '✓ Same — remove from list' +
-          '</button>' +
-          '<button class="alias-btn diff-btn" data-item="' + item.name + '" data-decision="different" ' +
-            'style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--border);background:var(--cream);color:var(--ink);font-size:13px;font-weight:500;cursor:pointer;" ' +
-            'onclick="setAliasDecision('' + item.name + '', 'different', this)">' +
-            '✗ Different — keep on list' +
-          '</button>' +
-        '</div>';
 
+      var label = document.createElement('div');
+      label.style.cssText = 'font-size:14px;font-weight:500;margin-bottom:8px;';
+      label.textContent = '"' + item.name + '" → matches staple "' + item.possibleStaple + '"';
+
+      var btnRow = document.createElement('div');
+      btnRow.style.cssText = 'display:flex;gap:8px;';
+
+      var sameBtn = document.createElement('button');
+      sameBtn.textContent = '✓ Same — remove from list';
+      sameBtn.dataset.itemName = item.name;
+      sameBtn.dataset.decision = 'same';
+      sameBtn.style.cssText = 'flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--green);background:var(--green);color:white;font-size:13px;font-weight:500;cursor:pointer;touch-action:manipulation;';
+
+      var diffBtn = document.createElement('button');
+      diffBtn.textContent = '✗ Different — keep on list';
+      diffBtn.dataset.itemName = item.name;
+      diffBtn.dataset.decision = 'different';
+      diffBtn.style.cssText = 'flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--border);background:var(--cream);color:var(--ink);font-size:13px;font-weight:500;cursor:pointer;touch-action:manipulation;';
+
+      btnRow.appendChild(sameBtn);
+      btnRow.appendChild(diffBtn);
+      el.appendChild(label);
+      el.appendChild(btnRow);
       container.appendChild(el);
     });
+
+    // Event delegation for alias buttons
+    container.onclick = function(e) {
+      var btn = e.target.closest('[data-decision]');
+      if (!btn) return;
+      var itemName = btn.dataset.itemName;
+      var decision = btn.dataset.decision;
+      aliasDecisions[itemName] = decision;
+
+      // Update styles for this pair
+      var row = btn.parentElement;
+      row.querySelectorAll('button').forEach(function(b) {
+        b.style.background = 'var(--cream)';
+        b.style.borderColor = 'var(--border)';
+        b.style.color = 'var(--ink)';
+      });
+      btn.style.background = decision === 'same' ? 'var(--green)' : '#FEF2F2';
+      btn.style.borderColor = decision === 'same' ? 'var(--green)' : '#EF4444';
+      btn.style.color = decision === 'same' ? 'white' : '#991B1B';
+    };
 
     document.getElementById('aliasModal').classList.add('open');
   }
 
   function setAliasDecision(itemName, decision, btn) {
-    aliasDecisions[itemName] = decision;
-    // Update button styles
-    var parent = btn.parentElement;
-    parent.querySelectorAll('button').forEach(function(b) {
-      b.style.background = 'var(--cream)';
-      b.style.borderColor = 'var(--border)';
-      b.style.color = 'var(--ink)';
-    });
-    btn.style.background = decision === 'same' ? 'var(--green)' : '#FEF2F2';
-    btn.style.borderColor = decision === 'same' ? 'var(--green)' : '#EF4444';
-    btn.style.color = decision === 'same' ? 'white' : '#991B1B';
+    // Legacy — handled by event delegation now
   }
 
   async function confirmAliases() {
