@@ -532,6 +532,18 @@
 
 <footer>Antal Family Meals · Powered by Claude</footer>
 
+<!-- ALIAS CONFIRMATION MODAL -->
+<div class="modal-overlay" id="aliasModal">
+  <div class="modal">
+    <div class="modal-title">Possible staple match 🤔</div>
+    <div class="modal-subtitle">I found items on the grocery list that might already be in your staples. Are these the same thing?</div>
+    <div id="aliasCheckList" style="margin-bottom: 16px;"></div>
+    <div class="modal-actions">
+      <button class="modal-btn green" onclick="confirmAliases()">✓ Done — show grocery list</button>
+    </div>
+  </div>
+</div>
+
 <!-- SCHEDULE MODAL -->
 <div class="modal-overlay" id="scheduleModal">
   <div class="modal">
@@ -605,6 +617,7 @@
   const PANTRY_CSV_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
   const STAPLES_CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=774516879`;
   const SCHEDULE_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=1682925418`;
+  const ALIASES_CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=1044343911`;
 
   // STATE
   let currentPlan        = null;
@@ -731,14 +744,22 @@
   async function buildSystemPrompt() {
     if (cachedSystemPrompt) return cachedSystemPrompt;
 
-    const [pantryCSV, staplesCSV, scheduleCSV] = await Promise.all([
+    const [pantryCSV, staplesCSV, scheduleCSV, aliasesCSV] = await Promise.all([
       fetchCSV(PANTRY_CSV_URL),
       fetchCSV(STAPLES_CSV_URL),
-      fetchCSV(SCHEDULE_CSV_URL)
+      fetchCSV(SCHEDULE_CSV_URL),
+      fetchCSV(ALIASES_CSV_URL)
     ]);
 
     const pantryText  = csvToReadable(parseCSV(pantryCSV),  'ACTIVE PANTRY (Sheet1)');
     const staplesText = csvToReadable(parseCSV(staplesCSV), 'STAPLES (always assumed on hand)');
+
+    // Parse aliases into a readable list for Claude
+    const aliasRows   = parseCSV(aliasesCSV);
+    const aliasText   = aliasRows && aliasRows.length > 1
+      ? 'KNOWN INGREDIENT ALIASES (treat these as identical):\n' +
+        aliasRows.slice(1).map(r => `- "${r[1]}" is the same as staple "${r[0]}"`).join('\n')
+      : 'KNOWN INGREDIENT ALIASES: none yet';
 
     const weekStr = weekKey(currentWeekMonday);
     const scheduled = getScheduledMeals(parseCSV(scheduleCSV), weekStr);
@@ -779,6 +800,8 @@ BEHAVIOR:
 ${pantryText}
 
 ${staplesText}
+
+${aliasText}
 
 ${scheduledText}
 --- END PANTRY DATA ---
@@ -1450,28 +1473,122 @@ Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian"
       // Step 1: Ask Claude for the item list (no prices yet)
       const text = await callClaude([{ role: 'user', content:
         baseMsg + '\n\nReturn ONLY a valid JSON array. No markdown, no explanation.' +
-        '\nEach item: {"name":"Item Name","quantity":2,"measurement":"lb"}' +
+        '\nEach item: {"name":"Item Name","quantity":2,"measurement":"lb","possibleStaple":null}' +
         '\nquantity must be a number. measurement is the unit (lb, oz, can, bunch, count, etc) or empty string for countable items like eggs.' +
         '\nMatch ingredient names exactly to what is already in the pantry when possible (same capitalization).' +
         '\nDo NOT include prices — those will be fetched separately.' +
+        '\nCRITICAL: Do NOT include ANY item that appears in the STAPLES list — staples are always on hand.' +
+        '\nCRITICAL: Do NOT include ANY item from the KNOWN INGREDIENT ALIASES list — those are confirmed staples.' +
+        '\nCRITICAL: Do NOT include ANY item that already exists in the active pantry with quantity > 0.' +
+        '\nIf an item MIGHT be the same as a staple but you are not certain, include it but set possibleStaple to the staple name it might match (e.g. "possibleStaple":"Red Thai Curry Paste").' +
         '\nReturn the JSON array only.'
       }], 1000);
 
       const clean = text.replace(/```json|```/g, '').trim();
       const items = JSON.parse(clean);
 
-      // Show checklist immediately with no prices while we fetch them
-      showGroceryChecklist(items.map(function(item) {
-        return Object.assign({}, item, { price: null, priceLoading: true });
-      }));
-
-      // Step 2: Fetch real prices from Kroger in background
-      fetchKrogerPrices(items);
+      // Check if any items have possibleStaple flags — show confirmation first
+      const flagged = items.filter(function(i) { return i.possibleStaple; });
+      if (flagged.length > 0) {
+        pendingGroceryItems = items;
+        showAliasConfirmation(flagged);
+      } else {
+        launchGroceryChecklist(items);
+      }
 
     } catch (err) {
       document.getElementById('copyBtn').style.display = '';
       showError(err.message);
     }
+  }
+
+  // Pending items waiting for alias confirmation
+  var pendingGroceryItems = [];
+  var aliasDecisions = {}; // { itemName: 'same' | 'different' }
+
+  function showAliasConfirmation(flaggedItems) {
+    var container = document.getElementById('aliasCheckList');
+    container.innerHTML = '';
+    aliasDecisions = {};
+
+    flaggedItems.forEach(function(item) {
+      aliasDecisions[item.name] = 'same'; // default to same
+
+      var el = document.createElement('div');
+      el.style.cssText = 'padding:12px 0;border-bottom:1px solid var(--border);';
+      el.innerHTML =
+        '<div style="font-size:14px;font-weight:500;margin-bottom:8px;">' +
+          '"' + item.name + '" → matches staple "' + item.possibleStaple + '"' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;">' +
+          '<button class="alias-btn same-btn" data-item="' + item.name + '" data-decision="same" ' +
+            'style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--green);background:var(--green-light);color:var(--green);font-size:13px;font-weight:500;cursor:pointer;" ' +
+            'onclick="setAliasDecision('' + item.name + '', 'same', this)">' +
+            '✓ Same — remove from list' +
+          '</button>' +
+          '<button class="alias-btn diff-btn" data-item="' + item.name + '" data-decision="different" ' +
+            'style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--border);background:var(--cream);color:var(--ink);font-size:13px;font-weight:500;cursor:pointer;" ' +
+            'onclick="setAliasDecision('' + item.name + '', 'different', this)">' +
+            '✗ Different — keep on list' +
+          '</button>' +
+        '</div>';
+
+      container.appendChild(el);
+    });
+
+    document.getElementById('aliasModal').classList.add('open');
+  }
+
+  function setAliasDecision(itemName, decision, btn) {
+    aliasDecisions[itemName] = decision;
+    // Update button styles
+    var parent = btn.parentElement;
+    parent.querySelectorAll('button').forEach(function(b) {
+      b.style.background = 'var(--cream)';
+      b.style.borderColor = 'var(--border)';
+      b.style.color = 'var(--ink)';
+    });
+    btn.style.background = decision === 'same' ? 'var(--green)' : '#FEF2F2';
+    btn.style.borderColor = decision === 'same' ? 'var(--green)' : '#EF4444';
+    btn.style.color = decision === 'same' ? 'white' : '#991B1B';
+  }
+
+  async function confirmAliases() {
+    closeModal('aliasModal');
+
+    // Save new "same" decisions as aliases to the sheet
+    var savePromises = [];
+    Object.keys(aliasDecisions).forEach(function(itemName) {
+      if (aliasDecisions[itemName] === 'same') {
+        var item = pendingGroceryItems.find(function(i) { return i.name === itemName; });
+        if (item && item.possibleStaple) {
+          savePromises.push(sheetWrite({
+            action: 'saveAlias',
+            canonical: item.possibleStaple,
+            alias: itemName
+          }));
+        }
+      }
+    });
+
+    // Fire and forget — don't block showing the list
+    Promise.all(savePromises).then(function() {
+      cachedSystemPrompt = null; // Invalidate so new alias loads next time
+    });
+
+    // Filter out items marked as same
+    var finalItems = pendingGroceryItems.filter(function(item) {
+      return !item.possibleStaple || aliasDecisions[item.name] === 'different';
+    });
+
+    launchGroceryChecklist(finalItems);
+  }
+
+  function launchGroceryChecklist(items) {
+    showGroceryChecklist(items.map(function(item) {
+      return Object.assign({}, item, { price: null, priceLoading: true });
+    }));
+    fetchKrogerPrices(items);
   }
 
   async function fetchKrogerPrices(items) {
