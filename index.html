@@ -1023,8 +1023,10 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
         : `Give me the full recipe for "${meal.name}" (${meal.cuisine}, pescatarian, serves 2, 30 min or less).\n\n## Ingredients\n(bullet list)\n\n## Steps\n(numbered list)\n\n## Leftover Idea\n(one sentence)\n\nNo preamble.`;
 
       const recipe = await callClaude([{ role: 'user', content: prompt }]);
+      currentRecipeRaw = recipe;
       document.getElementById('recipeLoading').style.display = 'none';
       document.getElementById('recipeBody').innerHTML = formatText(recipe);
+      document.getElementById('scaleSelector').style.display = 'flex';
       document.getElementById('recipeActions').style.display = 'flex';
     } catch (err) {
       document.getElementById('recipeLoading').style.display = 'none';
