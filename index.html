@@ -1064,6 +1064,40 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
     });
   }
 
+  // RECIPE SCALING
+  function setScaleBtn(scale) {
+    document.getElementById('scaleHalf').classList.toggle('active', scale === 0.5);
+    document.getElementById('scaleOne').classList.toggle('active', scale === 1);
+    document.getElementById('scaleTwo').classList.toggle('active', scale === 2);
+  }
+
+  async function setScale(scale) {
+    if (scale === currentScale || !currentRecipeRaw) return;
+    currentScale = scale;
+    setScaleBtn(scale);
+
+    if (scale === 1) {
+      document.getElementById('recipeBody').innerHTML = formatText(currentRecipeRaw);
+      return;
+    }
+
+    const scaleLabel = scale === 0.5 ? 'half (1 serving)' : 'double (4 servings)';
+    document.getElementById('recipeBody').innerHTML =
+      '<div class="loading"><div class="loading-dots"><span></span><span></span><span></span></div>Scaling recipe…</div>';
+
+    try {
+      const scaled = await callClaude([{ role: 'user', content:
+        'Scale the following recipe to ' + scaleLabel + '. Adjust all ingredient quantities accordingly. Keep the same format (## Ingredients, ## Steps, ## Leftover Idea). Return only the scaled recipe, no preamble.
+
+' + currentRecipeRaw
+      }], 1500);
+      document.getElementById('recipeBody').innerHTML = formatText(scaled);
+    } catch (err) {
+      document.getElementById('recipeBody').innerHTML =
+        '<div class="error-msg">⚠️ Could not scale recipe — ' + err.message + '</div>';
+    }
+  }
+
   // SWAP MEAL
   async function swapMeal() {
     const meal = currentPlan[currentMealIndex];
