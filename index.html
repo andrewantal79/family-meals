@@ -623,6 +623,7 @@
   let currentPlan        = null;
   let currentScale       = 1;
   let currentRecipeRaw   = '';
+  let swapHistory        = []; // tracks all meal names tried during swaps
   let currentMealIndex   = null;
   let cachedSystemPrompt = null;
   let selectedRating     = null;
@@ -793,6 +794,8 @@ VARIETY RULES (strictly enforce):
 - Rotate proteins every week: if salmon was used, lead with shrimp, cod, halibut, tofu, lentils, or eggs next
 - Rotate cuisines across the 3 cook nights — aim for 3 different cuisines each week
 - Rotate cooking methods: one pasta, one soup OR stew, one grain-based bowl or protein+veg dish per week
+- Thai cuisine is VARIED — go beyond curry and curry soups: try pad see ew, larb, som tum, Thai basil stir-fry, khao pad, mee goreng, Thai fish cakes, crying tiger, yum talay seafood salad
+- Asian cuisine beyond Thai: miso glazed fish, Japanese soba, Korean bibimbap, Vietnamese pho, Chinese mapo tofu
 - Rotate grains: pasta, rice, potatoes, lentils, polenta, bread — never the same grain twice in a week
 - When potatoes are in the pantry, use them in at least one meal: gratin, roasted, niçoise, soup
 - Think like a chef planning a restaurant week menu — maximum contrast between dishes
@@ -1033,6 +1036,7 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
     document.getElementById('scaleSelector').style.display = 'none';
     currentScale = 1;
     currentRecipeRaw = '';
+    swapHistory = [];
     setScaleBtn(1);
 
     // Schedule button state
@@ -1139,16 +1143,41 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
     document.getElementById('recipeTitle').textContent = 'Finding an alternative…';
 
     try {
+      // Track all rejected meal names so we never repeat them
+      if (!swapHistory.includes(meal.name)) swapHistory.push(meal.name);
+
       const otherMeals = currentPlan
         .filter((m, i) => i !== currentMealIndex && m.type === 'cook')
-        .map(m => m.name).join(', ');
+        .map(m => m.name);
+
+      const allAvoid = [...new Set([...otherMeals, ...swapHistory])].join(', ');
+
+      // Prefer cuisines other than the rejected meal's cuisine
+      // Only fall back to same cuisine if all others have been tried
+      const allCuisines = ['Mediterranean', 'Asian', 'Mexican', 'Italian', 'French', 'Thai'];
+      const triedCuisines = swapHistory.map(name => {
+        const found = currentPlan.find(m => m.name === name);
+        return found ? found.cuisine : null;
+      }).filter(Boolean);
+      const preferOtherCuisine = triedCuisines.every(c => c === meal.cuisine);
+      const cuisineInstruction = preferOtherCuisine
+        ? 'Prefer a cuisine other than ' + meal.cuisine + ' — try ' + allCuisines.filter(c => c !== meal.cuisine).join(', ') + ' first. Only use ' + meal.cuisine + ' if you have exhausted other options.'
+        : 'Any cuisine from: ' + allCuisines.join(', ') + '.';
 
       const raw = await callClaude([{ role: 'user', content:
-        `Suggest a different ${meal.cuisine} pescatarian meal for ${meal.day} to replace "${meal.name}". Pantry-first, 30 min, serves 2. Do not repeat: ${otherMeals || 'none'}.
-Return ONLY JSON: {"name":"Meal Name","cuisine":"${meal.cuisine}","isVegetarian":false,"keyIngredients":"ing1, ing2, ing3"}` }], 400);
+        'Suggest a completely different pescatarian meal for ' + meal.day + ' to replace "' + meal.name + '". ' +
+        cuisineInstruction + ' ' +
+        '30 min or less, serves 2. ' +
+        'Think about variety in protein (fish, shrimp, tofu, eggs, legumes), cooking method (roasted, stir-fried, braised, grilled, baked), and dish type (pasta, grain bowl, stew, tacos, frittata, curry, salad). ' +
+        'MUST NOT suggest any of these already-tried meals: ' + allAvoid + '. ' +
+        'Return ONLY JSON: {"name":"Meal Name","cuisine":"CuisineName","isVegetarian":false,"keyIngredients":"ing1, ing2, ing3"}'
+      }], 400);
 
       const newMeal = JSON.parse(raw.replace(/```json|```/g, '').trim());
-      newMeal.day = meal.day; newMeal.type = 'cook'; newMeal.leftoverOf = null;
+      newMeal.day = meal.day;
+      newMeal.type = 'cook';
+      newMeal.leftoverOf = null;
+      if (!newMeal.cuisine) newMeal.cuisine = meal.cuisine;
       currentPlan[currentMealIndex] = newMeal;
 
       document.getElementById('recipeTitle').textContent = newMeal.name;
