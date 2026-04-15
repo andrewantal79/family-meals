@@ -270,6 +270,44 @@
     -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
   .scale-btn.active { background: var(--ink); color: white; border-color: var(--ink); }
+  .recipe-chat {
+    margin-top: 24px; padding-top: 20px; border-top: 1.5px solid var(--border);
+  }
+  .recipe-chat-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: block;
+  }
+  .recipe-chat-messages {
+    display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;
+  }
+  .chat-msg {
+    padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.6;
+    max-width: 90%;
+  }
+  .chat-msg.user {
+    background: var(--ink); color: white; align-self: flex-end; border-radius: 12px 12px 2px 12px;
+  }
+  .chat-msg.assistant {
+    background: var(--cream); color: var(--ink); align-self: flex-start; border-radius: 12px 12px 12px 2px;
+    border: 1px solid var(--border);
+  }
+  .recipe-chat-input-row { display: flex; gap: 8px; }
+  .recipe-chat-input {
+    flex: 1; background: var(--cream); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 10px 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
+    outline: none; transition: border-color 0.2s; resize: none; height: 44px;
+  }
+  .recipe-chat-input:focus { border-color: var(--accent); }
+  .recipe-chat-send {
+    background: var(--accent); color: white; border: none;
+    border-radius: 10px; width: 44px; height: 44px;
+    font-size: 16px; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s; touch-action: manipulation;
+  }
+  .recipe-chat-send:hover { background: #9a3412; }
+  .recipe-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
   .recipe-detail-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; padding-top: 20px; border-top: 1.5px solid var(--border); }
   .recipe-action-btn {
     width: 100%; padding: 15px; border-radius: 12px; border: none;
@@ -521,6 +559,15 @@
       <button class="scale-btn" id="scaleTwo" onclick="setScale(2)">2x</button>
     </div>
     <div class="recipe-body" id="recipeBody"></div>
+    <div class="recipe-chat" id="recipeChat" style="display:none">
+      <span class="recipe-chat-label">Ask about this recipe</span>
+      <div class="recipe-chat-messages" id="recipeChatMessages"></div>
+      <div class="recipe-chat-input-row">
+        <textarea class="recipe-chat-input" id="recipeChatInput" placeholder="e.g. Can I use salmon instead? Make it spicier…" rows="1"></textarea>
+        <button class="recipe-chat-send" id="recipeChatSend" onclick="sendRecipeChat()">↑</button>
+      </div>
+    </div>
+
     <div class="recipe-detail-actions" id="recipeActions" style="display:none">
       <button class="recipe-action-btn schedule" id="scheduleBtn" onclick="handleScheduleBtn()">📅 Schedule this meal</button>
       <button class="recipe-action-btn swap" id="swapBtn" onclick="swapMeal()">🔄 Find me a different meal</button>
@@ -781,11 +828,12 @@ HOUSEHOLD PROFILE:
 - Planning priority: use pantry items when natural, but pantry is a GUIDE not a constraint.
 
 PANTRY PHILOSOPHY:
-- Pantry items are a starting point — use them when they fit naturally into a good meal
-- A great recipe that needs 2-3 additional ingredients is always better than a mediocre recipe that uses only pantry items
-- NEVER build a recipe around pantry items alone — real recipes need aromatics (onion, garlic, shallot), acid (lemon, vinegar), fat (olive oil, butter), and herbs even if not in the pantry
-- Assume staples are always available — olive oil, garlic, onion, lemon, salt, pepper, basic herbs are always on hand
-- The goal is delicious, complete meals. Pantry use is a bonus, not the objective.
+- Use pantry proteins FIRST — if salmon or tuna are in the pantry, build meals around those before suggesting cod, shrimp, or other proteins not on hand
+- Only suggest proteins NOT in the pantry if the pantry has no suitable protein for that meal
+- Other pantry items (vegetables, grains, sauces) are a guide — use them when natural but don't restrict to only those items
+- Real recipes need aromatics (onion, garlic, shallot), acid (lemon, vinegar), fat (olive oil, butter) — always include these even if not in the pantry
+- Staples are always available — olive oil, garlic, onion, lemon, salt, pepper, basic herbs are always on hand
+- The goal is delicious, complete meals that use what we have on hand as a starting point
 
 VARIETY RULES (strictly enforce):
 - NEVER suggest Thai red curry soup or any coconut curry soup more than once per month
@@ -1034,9 +1082,12 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
     document.getElementById('recipeActions').style.display = 'none';
     document.getElementById('recipeLoading').style.display = 'flex';
     document.getElementById('scaleSelector').style.display = 'none';
+    document.getElementById('recipeChat').style.display = 'none';
+    document.getElementById('recipeChatMessages').innerHTML = '';
     currentScale = 1;
     currentRecipeRaw = '';
     swapHistory = [];
+    recipeChatHistory = [];
     setScaleBtn(1);
 
     // Schedule button state
@@ -1060,9 +1111,12 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
 
       const recipe = await callClaude([{ role: 'user', content: prompt }]);
       currentRecipeRaw = recipe;
+      recipeChatHistory = [];
+      document.getElementById('recipeChatMessages').innerHTML = '';
       document.getElementById('recipeLoading').style.display = 'none';
       document.getElementById('recipeBody').innerHTML = formatText(recipe);
       document.getElementById('scaleSelector').style.display = 'flex';
+      document.getElementById('recipeChat').style.display = 'block';
       document.getElementById('recipeActions').style.display = 'flex';
     } catch (err) {
       document.getElementById('recipeLoading').style.display = 'none';
@@ -1101,6 +1155,81 @@ Return ONLY a JSON array of 2 objects: {"day":"Wednesday","type":"leftover","nam
       document.getElementById('recipeBody').innerHTML = '<div class="error-msg">⚠️ ' + err.message + '</div>';
     });
   }
+
+  // RECIPE CHAT
+  var recipeChatHistory = [];
+
+  async function sendRecipeChat() {
+    var input   = document.getElementById('recipeChatInput');
+    var sendBtn = document.getElementById('recipeChatSend');
+    var msg     = input.value.trim();
+    if (!msg || !currentRecipeRaw) return;
+
+    input.value = '';
+    sendBtn.disabled = true;
+
+    // Add user message to UI
+    addChatMessage('user', msg);
+
+    // Add to history
+    recipeChatHistory.push({ role: 'user', content: msg });
+
+    // Add typing indicator
+    var typingEl = addChatMessage('assistant', '…');
+
+    try {
+      // Build messages: system context + full history
+      var messages = [
+        {
+          role: 'user',
+          content: 'Here is the current recipe:\n\n' + currentRecipeRaw + '\n\nThe user will now ask questions or request modifications. If they ask to change an ingredient, substitute something, adjust spice level, or modify the recipe in any way, return the FULL updated recipe in the same format (## Ingredients, ## Steps, ## Leftover Idea). If they ask a simple question that does not require changing the recipe, just answer conversationally.'
+        },
+        { role: 'assistant', content: 'Understood — I have the recipe and am ready to help.' },
+        ...recipeChatHistory
+      ];
+
+      const response = await callClaude(messages, 1500);
+
+      // Remove typing indicator
+      typingEl.remove();
+
+      // Check if response contains a full updated recipe
+      if (response.includes('## Ingredients') && response.includes('## Steps')) {
+        // Update the recipe display
+        currentRecipeRaw = response;
+        document.getElementById('recipeBody').innerHTML = formatText(response);
+        addChatMessage('assistant', '✓ Recipe updated above.');
+        recipeChatHistory.push({ role: 'assistant', content: response });
+      } else {
+        addChatMessage('assistant', response);
+        recipeChatHistory.push({ role: 'assistant', content: response });
+      }
+    } catch (err) {
+      typingEl.remove();
+      addChatMessage('assistant', '⚠️ ' + err.message);
+    }
+
+    sendBtn.disabled = false;
+    // Scroll chat into view
+    document.getElementById('recipeChat').scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }
+
+  function addChatMessage(role, text) {
+    var container = document.getElementById('recipeChatMessages');
+    var el = document.createElement('div');
+    el.className = 'chat-msg ' + role;
+    el.textContent = text;
+    container.appendChild(el);
+    return el;
+  }
+
+  // Allow Enter to send (Shift+Enter for newline)
+  document.getElementById('recipeChatInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendRecipeChat();
+    }
+  });
 
   // RECIPE SCALING
   function setScaleBtn(scale) {
